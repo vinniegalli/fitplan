@@ -32,6 +32,12 @@ export default function SettingsClient({ trainer }: Props) {
   const [savingTheme, setSavingTheme] = useState(false)
   const [msg, setMsg]     = useState('')
 
+  const [currentPassword, setCurrentPassword] = useState('')
+  const [newPassword, setNewPassword]         = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
+  const [savingPwd, setSavingPwd]             = useState(false)
+  const [pwdMsg, setPwdMsg]                   = useState<{ type: 'success' | 'error'; text: string } | null>(null)
+
   async function handleSaveName(e: React.FormEvent) {
     e.preventDefault()
     setSaving(true)
@@ -69,6 +75,40 @@ export default function SettingsClient({ trainer }: Props) {
   async function handleSignOut() {
     await supabase.auth.signOut()
     router.push('/login')
+  }
+
+  async function handleChangePassword(e: React.FormEvent) {
+    e.preventDefault()
+    setPwdMsg(null)
+    if (newPassword !== confirmPassword) {
+      setPwdMsg({ type: 'error', text: 'As senhas não coincidem.' })
+      return
+    }
+    if (newPassword.length < 6) {
+      setPwdMsg({ type: 'error', text: 'A nova senha deve ter pelo menos 6 caracteres.' })
+      return
+    }
+    setSavingPwd(true)
+    const { data: { user } } = await supabase.auth.getUser()
+    const { error: signInError } = await supabase.auth.signInWithPassword({
+      email: user!.email!,
+      password: currentPassword,
+    })
+    if (signInError) {
+      setPwdMsg({ type: 'error', text: 'Senha atual incorreta.' })
+      setSavingPwd(false)
+      return
+    }
+    const { error } = await supabase.auth.updateUser({ password: newPassword })
+    if (error) {
+      setPwdMsg({ type: 'error', text: error.message })
+    } else {
+      setPwdMsg({ type: 'success', text: 'Senha alterada com sucesso!' })
+      setCurrentPassword('')
+      setNewPassword('')
+      setConfirmPassword('')
+    }
+    setSavingPwd(false)
   }
 
   return (
@@ -125,11 +165,71 @@ export default function SettingsClient({ trainer }: Props) {
                 : 'Até 3 alunos · Tema padrão · Entre em contato para fazer upgrade'}
             </p>
           </div>
-          {!isPro && (
-            <a href="mailto:contato@fitplan.app?subject=Upgrade Pro" className="btn btn-primary btn-sm">
-              Fazer Upgrade → Pro
-            </a>
+          <div style={{ display: 'flex', gap: '8px' }}>
+            {!isPro && (
+              <a href="mailto:contato@fitplan.app?subject=Upgrade Pro" className="btn btn-primary btn-sm">
+                Fazer Upgrade → Pro
+              </a>
+            )}
+            {isPro && (
+              <a
+                href={`mailto:contato@fitplan.app?subject=Cancelamento de plano&body=Olá, gostaria de cancelar meu plano Pro. Meu e-mail cadastrado é: ${trainer.name}`}
+                className="btn btn-outline btn-sm"
+                style={{ color: 'var(--muted)', borderColor: 'var(--border)' }}
+              >
+                Cancelar plano
+              </a>
+            )}
+          </div>
+        </div>
+
+        {/* Segurança */}
+        <div className="section-label">Segurança</div>
+        <div className="card card-red-top" style={{ padding: '20px', marginBottom: '24px' }}>
+          {pwdMsg && (
+            <div className={`alert ${pwdMsg.type === 'success' ? 'alert-success' : 'alert-error'}`} style={{ marginBottom: '16px' }}>
+              {pwdMsg.text}
+            </div>
           )}
+          <form onSubmit={handleChangePassword} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+            <div className="form-group">
+              <label className="form-label">Senha atual</label>
+              <input
+                type="password"
+                value={currentPassword}
+                onChange={e => setCurrentPassword(e.target.value)}
+                required
+                autoComplete="current-password"
+              />
+            </div>
+            <div className="form-group">
+              <label className="form-label">Nova senha</label>
+              <input
+                type="password"
+                value={newPassword}
+                onChange={e => setNewPassword(e.target.value)}
+                required
+                minLength={6}
+                autoComplete="new-password"
+              />
+              <span className="form-hint">Mínimo 6 caracteres</span>
+            </div>
+            <div className="form-group">
+              <label className="form-label">Confirmar nova senha</label>
+              <input
+                type="password"
+                value={confirmPassword}
+                onChange={e => setConfirmPassword(e.target.value)}
+                required
+                autoComplete="new-password"
+              />
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+              <button type="submit" className="btn btn-primary btn-sm" disabled={savingPwd}>
+                {savingPwd ? 'Alterando...' : 'Alterar senha'}
+              </button>
+            </div>
+          </form>
         </div>
 
         {/* Theme editor */}
