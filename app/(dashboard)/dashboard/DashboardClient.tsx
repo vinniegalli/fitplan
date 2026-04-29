@@ -247,7 +247,7 @@ export default function DashboardClient({ trainer, initialStudents }: Props) {
                       padding: "4px 6px",
                       lineHeight: 1,
                     }}
-                  >  
+                  >
                     <DeleteIcon sx={{ fontSize: 14 }} />
                   </button>
                   <Link

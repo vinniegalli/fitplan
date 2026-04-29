@@ -393,7 +393,17 @@ export default function StudentBuilderClient({
                       setShareOpen(false);
                     }}
                   >
-                    {copied ? <><CheckIcon sx={{ fontSize: 14, mr: 0.5 }} />Copiado!</> : <><ContentCopyIcon sx={{ fontSize: 14, mr: 0.5 }} />Copiar link</>}
+                    {copied ? (
+                      <>
+                        <CheckIcon sx={{ fontSize: 14, mr: 0.5 }} />
+                        Copiado!
+                      </>
+                    ) : (
+                      <>
+                        <ContentCopyIcon sx={{ fontSize: 14, mr: 0.5 }} />
+                        Copiar link
+                      </>
+                    )}
                   </button>
                   <a
                     href={`https://wa.me/?text=${encodeURIComponent(`Seu plano de treino: ${typeof window !== "undefined" ? window.location.origin : ""}${publicUrl}`)}`}
@@ -409,7 +419,8 @@ export default function StudentBuilderClient({
                     }}
                     onClick={() => setShareOpen(false)}
                   >
-                    <WhatsAppIcon sx={{ fontSize: 14, mr: 0.5 }} />WhatsApp
+                    <WhatsAppIcon sx={{ fontSize: 14, mr: 0.5 }} />
+                    WhatsApp
                   </a>
                   <a
                     href={publicUrl}
@@ -425,7 +436,8 @@ export default function StudentBuilderClient({
                     }}
                     onClick={() => setShareOpen(false)}
                   >
-                    <VisibilityIcon sx={{ fontSize: 14, mr: 0.5 }} />Ver como aluno
+                    <VisibilityIcon sx={{ fontSize: 14, mr: 0.5 }} />
+                    Ver como aluno
                   </a>
                 </div>
               )}
@@ -670,7 +682,19 @@ export default function StudentBuilderClient({
 
                   {/* Warmup */}
                   <div className="form-group" style={{ marginBottom: "16px" }}>
-                    <label className="form-label" style={{ display: 'flex', alignItems: 'center', gap: '4px' }}><BoltIcon sx={{ fontSize: 15, color: 'var(--primary)' }} /> Aquecimento</label>
+                    <label
+                      className="form-label"
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "4px",
+                      }}
+                    >
+                      <BoltIcon
+                        sx={{ fontSize: 15, color: "var(--primary)" }}
+                      />{" "}
+                      Aquecimento
+                    </label>
                     <textarea
                       rows={2}
                       defaultValue={currentDay.warmup ?? ""}
@@ -909,15 +933,7 @@ export default function StudentBuilderClient({
                 </thead>
                 <tbody>
                   {periods.map((pw) => (
-                    <tr
-                      key={pw.id}
-                      style={{ cursor: "pointer" }}
-                      onClick={() => {
-                        if (editingPeriod === pw.id) return;
-                        setEditingPeriod(pw.id);
-                        setPeriodForm({ ...pw });
-                      }}
-                    >
+                    <tr key={pw.id}>
                       <td className="week-col">S{pw.week_number}</td>
                       {editingPeriod === pw.id ? (
                         <>
@@ -1074,7 +1090,18 @@ export default function StudentBuilderClient({
                             {pw.observation}
                           </td>
                           <td>
-                            <span className="text-xs text-muted">editar</span>
+                            <button
+                              className="btn btn-ghost btn-sm"
+                              style={{ color: "var(--muted)", padding: "4px 8px" }}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setEditingPeriod(pw.id);
+                                setPeriodForm({ ...pw });
+                              }}
+                              title="Editar semana"
+                            >
+                              <EditIcon sx={{ fontSize: 14 }} />
+                            </button>
                           </td>
                         </>
                       )}

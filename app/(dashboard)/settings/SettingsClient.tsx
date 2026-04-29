@@ -59,6 +59,10 @@ export default function SettingsClient({ trainer }: Props) {
     text: string;
   } | null>(null);
 
+  const [deletingAccount, setDeletingAccount] = useState(false);
+  const [deleteConfirm, setDeleteConfirm] = useState(false);
+  const [deleteError, setDeleteError] = useState("");
+
   async function handleSaveName(e: React.FormEvent) {
     e.preventDefault();
     setSaving(true);
@@ -135,6 +139,20 @@ export default function SettingsClient({ trainer }: Props) {
       setConfirmPassword("");
     }
     setSavingPwd(false);
+  }
+
+  async function handleDeleteAccount() {
+    setDeletingAccount(true);
+    setDeleteError("");
+    const res = await fetch("/api/delete-account", { method: "DELETE" });
+    if (res.ok) {
+      await supabase.auth.signOut();
+      router.push("/login");
+    } else {
+      const data = await res.json().catch(() => ({}));
+      setDeleteError(data.error ?? "Erro ao excluir conta.");
+      setDeletingAccount(false);
+    }
   }
 
   return (
@@ -537,6 +555,67 @@ export default function SettingsClient({ trainer }: Props) {
                 >
                   Botão primário
                 </div>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Zona de perigo */}
+        <div className="section-label" style={{ color: "#e8192c", marginTop: "32px" }}>
+          Zona de Perigo
+        </div>
+        <div
+          className="card"
+          style={{
+            padding: "20px",
+            marginBottom: "32px",
+            border: "1px solid rgba(232,25,44,0.3)",
+          }}
+        >
+          {deleteError && (
+            <div className="alert alert-error" style={{ marginBottom: "16px" }}>
+              {deleteError}
+            </div>
+          )}
+          {!deleteConfirm ? (
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "12px" }}>
+              <div>
+                <div style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 700, fontSize: "1rem", color: "var(--text)" }}>
+                  Excluir minha conta
+                </div>
+                <p className="text-muted text-sm" style={{ marginTop: "4px" }}>
+                  Remove permanentemente sua conta, alunos e todos os dados. Ação irreversível.
+                </p>
+              </div>
+              <button
+                className="btn btn-sm"
+                style={{ background: "rgba(232,25,44,0.12)", color: "#e8192c", border: "1px solid rgba(232,25,44,0.4)" }}
+                onClick={() => setDeleteConfirm(true)}
+              >
+                Excluir conta
+              </button>
+            </div>
+          ) : (
+            <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+              <p style={{ color: "var(--text)", fontWeight: 600 }}>
+                Tem certeza? Esta ação é irreversível e todos os seus dados serão apagados.
+              </p>
+              <div style={{ display: "flex", gap: "10px" }}>
+                <button
+                  className="btn btn-sm"
+                  style={{ background: "#e8192c", color: "#fff", border: "none" }}
+                  onClick={handleDeleteAccount}
+                  disabled={deletingAccount}
+                >
+                  {deletingAccount ? "Excluindo..." : "Sim, excluir permanentemente"}
+                </button>
+                <button
+                  className="btn btn-ghost btn-sm"
+                  onClick={() => { setDeleteConfirm(false); setDeleteError(""); }}
+                  disabled={deletingAccount}
+                >
+                  Cancelar
+                </button>
               </div>
             </div>
           )}

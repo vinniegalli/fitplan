@@ -278,7 +278,10 @@ export default function PublicPlanView({
                     marginBottom: "4px",
                   }}
                 >
-                  <BoltIcon sx={{ fontSize: 14, mr: 0.5, verticalAlign: 'middle' }} />Aquecimento
+                  <BoltIcon
+                    sx={{ fontSize: 14, mr: 0.5, verticalAlign: "middle" }}
+                  />
+                  Aquecimento
                 </strong>
                 {currentDay.warmup}
               </div>
