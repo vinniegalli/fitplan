@@ -94,7 +94,7 @@ export default function DashboardClient({ trainer, initialStudents }: Props) {
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
             <span className="badge">{trainer.name}</span>
             <span className={`badge ${trainer.plan === 'pro' ? 'badge-red' : ''}`}>
-              {trainer.plan === 'pro' ? 'PRO' : 'Free'}
+              {trainer.plan === 'pro' ? 'PRO' : 'Gratuito'}
             </span>
             <Link href="/dashboard/settings" className="btn btn-outline btn-sm">Configurações</Link>
             <button className="btn btn-ghost btn-sm" onClick={handleSignOut}>Sair</button>

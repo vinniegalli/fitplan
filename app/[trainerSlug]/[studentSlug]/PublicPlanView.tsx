@@ -182,7 +182,7 @@ export default function PublicPlanView({ trainerName, student, plan, days, exerc
                         <td className="ex-num">{String(i + 1).padStart(2, '0')}</td>
                         <td>
                           <span className="ex-name">{ex.name}</span>
-                          {ex.type === 'compound' && <span className="ex-tag">Compound</span>}
+                          {ex.type === 'compound' && <span className="ex-tag">Composto</span>}
                           {ex.type === 'cluster' && (
                             <span className={`ex-tag ex-tag-cluster${clusterActive ? '' : ' ex-tag-dimmed'}`}>
                               Cluster

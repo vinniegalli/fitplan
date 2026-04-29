@@ -351,14 +351,14 @@ export default function StudentBuilderClient({
                             <td className="ex-num">{String(i + 1).padStart(2, '0')}</td>
                             <td>
                               <span className="ex-name">{ex.name}</span>
-                              {ex.type === 'compound' && <span className="ex-tag">Compound</span>}
+                              {ex.type === 'compound' && <span className="ex-tag">Composto</span>}
                               {ex.type === 'cluster'  && <span className="ex-tag ex-tag-cluster">Cluster</span>}
                               {ex.cluster_block && (
                                 <span className="text-muted text-xs" style={{ marginLeft: '6px' }}>{ex.cluster_block}</span>
                               )}
                               {ex.notes && <div className="ex-note">{ex.notes}</div>}
                             </td>
-                            <td><span className="badge">{ex.type}</span></td>
+                            <td><span className="badge">{{ compound: 'Composto', cluster: 'Cluster', isolation: 'Isolamento' }[ex.type]}</span></td>
                             <td><span className="rest-chip">{ex.rest_time ?? '—'}</span></td>
                             <td style={{ maxWidth: '180px' }}>
                               <span className="ex-note">{ex.notes ?? ''}</span>
@@ -391,9 +391,9 @@ export default function StudentBuilderClient({
                         <div className="form-group">
                           <label className="form-label">Tipo</label>
                           <select value={addExType} onChange={e => setAddExType(e.target.value as Exercise['type'])}>
-                            <option value="compound">Compound</option>
+                            <option value="compound">Composto</option>
                             <option value="cluster">Cluster</option>
-                            <option value="isolation">Isolation</option>
+                            <option value="isolation">Isolamento</option>
                           </select>
                         </div>
                       </div>
@@ -431,7 +431,7 @@ export default function StudentBuilderClient({
           <div>
             <div style={{ marginBottom: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px' }}>
               <p className="text-muted text-sm">
-                Clique em uma linha para editar. Volumes são aplicados aos exercícios Compound e Cluster na view do aluno.
+                Clique em uma linha para editar. Volumes são aplicados aos exercícios Compostos e Cluster na página do aluno.
               </p>
             </div>
 
