@@ -85,6 +85,12 @@ export default function DashboardClient({ trainer, initialStudents }: Props) {
     router.push('/login')
   }
 
+  async function handleDeleteStudent(id: string, name: string) {
+    if (!confirm(`Excluir "${name}"? Esta ação não pode ser desfeita.`)) return
+    const { error } = await supabase.from('students').delete().eq('id', id)
+    if (!error) setStudents(prev => prev.filter(s => s.id !== id))
+  }
+
   return (
     <>
       {/* Header */}
@@ -142,10 +148,23 @@ export default function DashboardClient({ trainer, initialStudents }: Props) {
             {students.map(s => {
               const activePlan = s.training_plans?.find(p => p.active)
               return (
-                <Link key={s.id} href={`/dashboard/student/${s.id}`}>
+                <div key={s.id} style={{ position: 'relative' }}>
+                  <button
+                    onClick={(e) => { e.preventDefault(); handleDeleteStudent(s.id, s.name) }}
+                    title="Excluir aluno"
+                    style={{
+                      position: 'absolute', top: '10px', right: '10px', zIndex: 1,
+                      background: 'transparent', border: 'none', cursor: 'pointer',
+                      color: 'var(--muted)', fontSize: '0.85rem', padding: '4px 6px',
+                      lineHeight: 1,
+                    }}
+                  >
+                    ✕
+                  </button>
+                  <Link key={s.id} href={`/dashboard/student/${s.id}`} style={{ display: 'block' }}>
                   <div className="card card-red-top" style={{ padding: '18px', cursor: 'pointer', transition: 'border-color 0.15s' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '10px' }}>
-                      <span style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 700, fontSize: '1.05rem', color: 'var(--text)' }}>
+                      <span style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 700, fontSize: '1.05rem', color: 'var(--text)', paddingRight: '24px' }}>
                         {s.name}
                       </span>
                       <span className={`badge ${s.active ? 'badge-green' : ''}`}>
@@ -178,7 +197,8 @@ export default function DashboardClient({ trainer, initialStudents }: Props) {
                       /{trainer.slug}/{s.slug}
                     </p>
                   </div>
-                </Link>
+                  </Link>
+                </div>
               )
             })}
           </div>
