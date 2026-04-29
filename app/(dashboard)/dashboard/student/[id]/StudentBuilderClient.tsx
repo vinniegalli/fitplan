@@ -52,7 +52,9 @@ export default function StudentBuilderClient({
   const [creatingPlan, setCreatingPlan] = useState(false);
 
   const [addExName, setAddExName] = useState("");
-  const [addExType, setAddExType] = useState<Exercise["type"] | "">("isolation");
+  const [addExType, setAddExType] = useState<Exercise["type"] | "">(
+    "isolation",
+  );
   const [addExBlock, setAddExBlock] = useState("");
   const [addExRest, setAddExRest] = useState("2 min");
   const [addExNotes, setAddExNotes] = useState("");
@@ -63,8 +65,8 @@ export default function StudentBuilderClient({
 
   // Editing day label/focus
   const [editingDayId, setEditingDayId] = useState<string | null>(null);
-  const [dayEditLabel, setDayEditLabel] = useState('');
-  const [dayEditFocus, setDayEditFocus] = useState('');
+  const [dayEditLabel, setDayEditLabel] = useState("");
+  const [dayEditFocus, setDayEditFocus] = useState("");
 
   const template = DIVISION_TEMPLATES.find((t) => t.type === divisionType);
   const currentDayExercises = activeDay ? (exercises[activeDay] ?? []) : [];
@@ -152,7 +154,10 @@ export default function StudentBuilderClient({
         workout_day_id: activeDay,
         name: addExName.trim(),
         type: (addExType || "isolation") as Exercise["type"],
-        cluster_block: (addExType || "isolation") === "cluster" ? addExBlock || "(3×3)" : null,
+        cluster_block:
+          (addExType || "isolation") === "cluster"
+            ? addExBlock || "(3×3)"
+            : null,
         rest_time: addExRest || null,
         notes: addExNotes || null,
         exercise_order: order,
@@ -206,7 +211,9 @@ export default function StudentBuilderClient({
   async function saveDayEdit(dayId: string) {
     const updates = { label: dayEditLabel, focus: dayEditFocus };
     await supabase.from("workout_days").update(updates).eq("id", dayId);
-    setDays((prev) => prev.map((d) => (d.id === dayId ? { ...d, ...updates } : d)));
+    setDays((prev) =>
+      prev.map((d) => (d.id === dayId ? { ...d, ...updates } : d)),
+    );
     setEditingDayId(null);
   }
 
@@ -379,27 +386,53 @@ export default function StudentBuilderClient({
         {tab === "treino" && (
           <div className="day-layout">
             {/* Day sidebar (desktop) */}
-            <div className="day-sidebar" style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
-              <div className="section-label" style={{ margin: "0 0 8px" }}>Dias</div>
+            <div
+              className="day-sidebar"
+              style={{ display: "flex", flexDirection: "column", gap: "4px" }}
+            >
+              <div className="section-label" style={{ margin: "0 0 8px" }}>
+                Dias
+              </div>
               {days.map((d) => (
                 <div key={d.id}>
                   {editingDayId === d.id ? (
-                    <div style={{ display: "flex", flexDirection: "column", gap: "6px", padding: "8px", background: "var(--surface2)", border: "1px solid var(--primary-dim)", borderRadius: "2px" }}>
+                    <div
+                      style={{
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: "6px",
+                        padding: "8px",
+                        background: "var(--surface2)",
+                        border: "1px solid var(--primary-dim)",
+                        borderRadius: "2px",
+                      }}
+                    >
                       <input
                         value={dayEditLabel}
-                        onChange={e => setDayEditLabel(e.target.value)}
+                        onChange={(e) => setDayEditLabel(e.target.value)}
                         placeholder="Nome do dia"
                         style={{ fontSize: "0.8rem" }}
                       />
                       <input
                         value={dayEditFocus}
-                        onChange={e => setDayEditFocus(e.target.value)}
+                        onChange={(e) => setDayEditFocus(e.target.value)}
                         placeholder="Foco muscular"
                         style={{ fontSize: "0.8rem" }}
                       />
                       <div style={{ display: "flex", gap: "6px" }}>
-                        <button className="btn btn-primary btn-sm" style={{ flex: 1 }} onClick={() => saveDayEdit(d.id)}>Salvar</button>
-                        <button className="btn btn-ghost btn-sm" onClick={() => setEditingDayId(null)}>✕</button>
+                        <button
+                          className="btn btn-primary btn-sm"
+                          style={{ flex: 1 }}
+                          onClick={() => saveDayEdit(d.id)}
+                        >
+                          Salvar
+                        </button>
+                        <button
+                          className="btn btn-ghost btn-sm"
+                          onClick={() => setEditingDayId(null)}
+                        >
+                          ✕
+                        </button>
                       </div>
                     </div>
                   ) : (
@@ -407,10 +440,17 @@ export default function StudentBuilderClient({
                       onClick={() => setActiveDay(d.id)}
                       style={{
                         width: "100%",
-                        background: activeDay === d.id ? "rgba(232,25,44,0.1)" : "var(--surface)",
+                        background:
+                          activeDay === d.id
+                            ? "rgba(232,25,44,0.1)"
+                            : "var(--surface)",
                         border: `1px solid ${activeDay === d.id ? "var(--primary-dim)" : "var(--border)"}`,
-                        borderLeft: activeDay === d.id ? "3px solid var(--primary)" : "3px solid transparent",
-                        color: activeDay === d.id ? "var(--text)" : "var(--muted)",
+                        borderLeft:
+                          activeDay === d.id
+                            ? "3px solid var(--primary)"
+                            : "3px solid transparent",
+                        color:
+                          activeDay === d.id ? "var(--text)" : "var(--muted)",
                         textAlign: "left",
                         padding: "10px 12px",
                         cursor: "pointer",
@@ -425,17 +465,48 @@ export default function StudentBuilderClient({
                     >
                       <div style={{ paddingRight: "20px" }}>{d.label}</div>
                       {d.focus && (
-                        <div style={{ fontSize: "0.7rem", color: "var(--muted)", fontWeight: 400, marginTop: "2px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                        <div
+                          style={{
+                            fontSize: "0.7rem",
+                            color: "var(--muted)",
+                            fontWeight: 400,
+                            marginTop: "2px",
+                            whiteSpace: "nowrap",
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                          }}
+                        >
                           {d.focus}
                         </div>
                       )}
-                      <div style={{ fontSize: "0.68rem", color: "var(--primary)", marginTop: "4px" }}>
+                      <div
+                        style={{
+                          fontSize: "0.68rem",
+                          color: "var(--primary)",
+                          marginTop: "4px",
+                        }}
+                      >
                         {(exercises[d.id] ?? []).length} ex.
                       </div>
                       <button
-                        onClick={e => { e.stopPropagation(); setEditingDayId(d.id); setDayEditLabel(d.label); setDayEditFocus(d.focus ?? ""); }}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setEditingDayId(d.id);
+                          setDayEditLabel(d.label);
+                          setDayEditFocus(d.focus ?? "");
+                        }}
                         title="Editar dia"
-                        style={{ position: "absolute", top: "6px", right: "6px", background: "transparent", border: "none", color: "var(--muted)", cursor: "pointer", fontSize: "0.7rem", padding: "2px" }}
+                        style={{
+                          position: "absolute",
+                          top: "6px",
+                          right: "6px",
+                          background: "transparent",
+                          border: "none",
+                          color: "var(--muted)",
+                          cursor: "pointer",
+                          fontSize: "0.7rem",
+                          padding: "2px",
+                        }}
                       >
                         ✏️
                       </button>
@@ -448,12 +519,22 @@ export default function StudentBuilderClient({
             {/* Exercise panel */}
             <div>
               {/* Mobile day select */}
-              <div style={{ marginBottom: "14px", display: "none" }} className="mobile-day-select">
-                <label className="form-label" style={{ marginBottom: "6px" }}>Dia de treino</label>
-                <select value={activeDay ?? ""} onChange={e => setActiveDay(e.target.value)}>
-                  {days.map(d => (
+              <div
+                style={{ marginBottom: "14px", display: "none" }}
+                className="mobile-day-select"
+              >
+                <label className="form-label" style={{ marginBottom: "6px" }}>
+                  Dia de treino
+                </label>
+                <select
+                  value={activeDay ?? ""}
+                  onChange={(e) => setActiveDay(e.target.value)}
+                >
+                  {days.map((d) => (
                     <option key={d.id} value={d.id}>
-                      {d.label}{d.focus ? ` — ${d.focus}` : ""} ({(exercises[d.id] ?? []).length} ex.)
+                      {d.label}
+                      {d.focus ? ` — ${d.focus}` : ""} (
+                      {(exercises[d.id] ?? []).length} ex.)
                     </option>
                   ))}
                 </select>
@@ -461,12 +542,30 @@ export default function StudentBuilderClient({
 
               {currentDay && (
                 <>
-                  <div style={{ marginBottom: "16px", display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: "8px" }}>
+                  <div
+                    style={{
+                      marginBottom: "16px",
+                      display: "flex",
+                      alignItems: "flex-start",
+                      justifyContent: "space-between",
+                      gap: "8px",
+                    }}
+                  >
                     <div>
-                      <h2 style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: "1.8rem", color: "var(--primary)", letterSpacing: "2px", lineHeight: 1 }}>
+                      <h2
+                        style={{
+                          fontFamily: "'Bebas Neue', sans-serif",
+                          fontSize: "1.8rem",
+                          color: "var(--primary)",
+                          letterSpacing: "2px",
+                          lineHeight: 1,
+                        }}
+                      >
                         {currentDay.label}
                       </h2>
-                      {currentDay.focus && <p className="text-muted text-sm">{currentDay.focus}</p>}
+                      {currentDay.focus && (
+                        <p className="text-muted text-sm">{currentDay.focus}</p>
+                      )}
                     </div>
                   </div>
 
@@ -603,7 +702,9 @@ export default function StudentBuilderClient({
                     >
                       <div className="form-grid-2">
                         <div className="form-group">
-                          <label className="form-label">Nome do exercício *</label>
+                          <label className="form-label">
+                            Nome do exercício *
+                          </label>
                           <ExerciseAutocomplete
                             value={addExName}
                             onChange={setAddExName}
@@ -615,7 +716,9 @@ export default function StudentBuilderClient({
                           <select
                             value={addExType}
                             onChange={(e) =>
-                              setAddExType(e.target.value as Exercise["type"] | "")
+                              setAddExType(
+                                e.target.value as Exercise["type"] | "",
+                              )
                             }
                           >
                             <option value="">— Tipo —</option>
@@ -626,7 +729,7 @@ export default function StudentBuilderClient({
                         </div>
                       </div>
                       <div className="form-grid-2">
-                        {(addExType === "cluster") && (
+                        {addExType === "cluster" && (
                           <div className="form-group">
                             <label className="form-label">Bloco Cluster</label>
                             <input

@@ -178,10 +178,7 @@ export default function DashboardClient({ trainer, initialStudents }: Props) {
           {isFreeLimited ? (
             <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
               <span className="badge badge-red">Limite atingido</span>
-              <Link
-                href="/settings#upgrade"
-                className="btn btn-primary btn-sm"
-              >
+              <Link href="/settings#upgrade" className="btn btn-primary btn-sm">
                 Fazer upgrade
               </Link>
             </div>
