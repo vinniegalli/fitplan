@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import type {
@@ -67,6 +67,19 @@ export default function StudentBuilderClient({
   const [editingDayId, setEditingDayId] = useState<string | null>(null);
   const [dayEditLabel, setDayEditLabel] = useState("");
   const [dayEditFocus, setDayEditFocus] = useState("");
+  const [shareOpen, setShareOpen] = useState(false);
+  const [copied, setCopied] = useState(false);
+  const shareRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClick(e: MouseEvent) {
+      if (shareRef.current && !shareRef.current.contains(e.target as Node)) {
+        setShareOpen(false);
+      }
+    }
+    if (shareOpen) document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, [shareOpen]);
 
   const template = DIVISION_TEMPLATES.find((t) => t.type === divisionType);
   const currentDayExercises = activeDay ? (exercises[activeDay] ?? []) : [];
@@ -302,14 +315,7 @@ export default function StudentBuilderClient({
     <>
       <header className="site-header">
         <div className="site-header-inner">
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "12px",
-              flexWrap: "wrap",
-            }}
-          >
+          <div style={{ display: "flex", alignItems: "center", gap: "12px", flexWrap: "wrap" }}>
             <Link href="/dashboard" className="btn btn-ghost btn-sm">
               ← Dashboard
             </Link>
@@ -317,28 +323,77 @@ export default function StudentBuilderClient({
               FIT<span>PLAN</span>
             </div>
           </div>
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "10px",
-              flexWrap: "wrap",
-            }}
-          >
+          <div style={{ display: "flex", alignItems: "center", gap: "10px", flexWrap: "wrap" }}>
             <span className="badge">{student.name}</span>
             {plan && (
               <span className="badge badge-blue">
                 {plan.division_type} · {plan.total_weeks}sem
               </span>
             )}
-            <a
-              href={publicUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="btn btn-outline btn-sm"
-            >
-              Ver como aluno ↗
-            </a>
+            {/* Share button */}
+            <div style={{ position: "relative" }} ref={shareRef}>
+              <button
+                className="btn btn-outline btn-sm"
+                onClick={() => setShareOpen((p) => !p)}
+              >
+                Compartilhar ↗
+              </button>
+              {shareOpen && (
+                <div
+                  style={{
+                    position: "absolute",
+                    top: "calc(100% + 6px)",
+                    right: 0,
+                    background: "var(--surface)",
+                    border: "1px solid var(--border)",
+                    borderRadius: "4px",
+                    boxShadow: "0 8px 24px rgba(0,0,0,0.5)",
+                    zIndex: 100,
+                    minWidth: "180px",
+                    overflow: "hidden",
+                  }}
+                >
+                  <button
+                    className="btn btn-ghost btn-sm"
+                    style={{ width: "100%", textAlign: "left", borderRadius: 0, padding: "10px 14px" }}
+                    onClick={() => {
+                      const url = `${window.location.origin}${publicUrl}`;
+                      navigator.clipboard.writeText(url).then(() => {
+                        setCopied(true);
+                        setTimeout(() => setCopied(false), 2000);
+                      });
+                      setShareOpen(false);
+                    }}
+                  >
+                    {copied ? "✓ Copiado!" : "📋 Copiar link"}
+                  </button>
+                  <a
+                    href={`https://wa.me/?text=${encodeURIComponent(`Seu plano de treino: ${typeof window !== "undefined" ? window.location.origin : ""}${publicUrl}`)}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="btn btn-ghost btn-sm"
+                    style={{ width: "100%", textAlign: "left", borderRadius: 0, padding: "10px 14px", display: "block" }}
+                    onClick={() => setShareOpen(false)}
+                  >
+                    💬 WhatsApp
+                  </a>
+                  <a
+                    href={publicUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="btn btn-ghost btn-sm"
+                    style={{ width: "100%", textAlign: "left", borderRadius: 0, padding: "10px 14px", display: "block" }}
+                    onClick={() => setShareOpen(false)}
+                  >
+                    👁️ Ver como aluno
+                  </a>
+                </div>
+              )}
+            </div>
+            {/* Settings button */}
+            <Link href="/settings" className="btn btn-ghost btn-sm" title="Configurações">
+              ⚙️
+            </Link>
           </div>
         </div>
       </header>

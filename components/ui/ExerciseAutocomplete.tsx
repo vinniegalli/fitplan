@@ -19,10 +19,16 @@ export default function ExerciseAutocomplete({
 
   const filtered =
     value.trim().length === 0
-      ? EXERCISE_LIST.slice(0, 8)
+      ? EXERCISE_LIST
       : EXERCISE_LIST.filter((e) =>
           e.toLowerCase().includes(value.toLowerCase()),
-        ).slice(0, 10);
+        );
+
+  const hasExactMatch = EXERCISE_LIST.some(
+    (e) => e.toLowerCase() === value.trim().toLowerCase(),
+  );
+  const showCustomOption = value.trim().length > 0 && !hasExactMatch;
+  const showDropdown = open && (filtered.length > 0 || showCustomOption);
 
   // Close on outside click
   useEffect(() => {
@@ -63,7 +69,7 @@ export default function ExerciseAutocomplete({
         required={required}
         autoComplete="off"
       />
-      {open && filtered.length > 0 && (
+      {showDropdown && (
         <div
           style={{
             position: "absolute",
@@ -110,8 +116,7 @@ export default function ExerciseAutocomplete({
           {value.trim().length > 0 &&
             !EXERCISE_LIST.some(
               (e) => e.toLowerCase() === value.toLowerCase(),
-            ) && (
-              <button
+            ) && (              <button
                 type="button"
                 onMouseDown={() => handleSelect(value.trim())}
                 style={{
