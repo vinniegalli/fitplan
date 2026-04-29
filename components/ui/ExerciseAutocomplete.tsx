@@ -1,5 +1,3 @@
-"use client";
-
 import { useState, useRef, useEffect } from "react";
 import { EXERCISE_LIST } from "@/lib/exercises";
 
@@ -40,8 +38,6 @@ export default function ExerciseAutocomplete({
     return () => document.removeEventListener("mousedown", handleClick);
   }, []);
 
-  function handleInput(e: React.ChangeEvent<HTMLInputElement>) {
-    setQuery(e.target.value);
   function handleInput(e: React.ChangeEvent<HTMLInputElement>) {
     onChange(e.target.value);
     setOpen(true);
