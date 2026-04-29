@@ -42,7 +42,10 @@ export async function middleware(request: NextRequest) {
   }
 
   // Redirect logged-in users away from auth pages
-  if ((pathname === "/login" || pathname === "/register") && user) {
+  if (
+    (pathname === "/login" || pathname === "/register" || pathname === "/forgot-password") &&
+    user
+  ) {
     const url = request.nextUrl.clone();
     url.pathname = "/dashboard";
     return NextResponse.redirect(url);
@@ -52,5 +55,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/dashboard/:path*", "/settings", "/login", "/register"],
+  matcher: ["/dashboard/:path*", "/settings", "/login", "/register", "/forgot-password"],
 };

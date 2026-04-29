@@ -68,6 +68,11 @@ export default function LoginPage() {
                 required
                 autoComplete="current-password"
               />
+              <div style={{ textAlign: 'right', marginTop: '4px' }}>
+                <Link href="/forgot-password" style={{ fontSize: '0.78rem', color: 'var(--muted)' }}>
+                  Esqueci minha senha
+                </Link>
+              </div>
             </div>
 
             <button

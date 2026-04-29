@@ -48,7 +48,7 @@ select {
   border: 1px solid var(--border);
   border-radius: 2px;
   padding: 8px 12px;
-  font-size: 0.875rem;
+  font-size: 1rem; /* >= 16px previne zoom automático no iOS */
   outline: none;
   transition: border-color 0.15s;
   width: 100%;
