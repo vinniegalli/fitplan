@@ -522,13 +522,11 @@ export default function StudentBuilderClient({
                         value={dayEditLabel}
                         onChange={(e) => setDayEditLabel(e.target.value)}
                         placeholder="Nome do dia"
-                        style={{ fontSize: "0.8rem" }}
                       />
                       <input
                         value={dayEditFocus}
                         onChange={(e) => setDayEditFocus(e.target.value)}
                         placeholder="Foco muscular"
-                        style={{ fontSize: "0.8rem" }}
                       />
                       <div style={{ display: "flex", gap: "6px" }}>
                         <button
@@ -1092,7 +1090,10 @@ export default function StudentBuilderClient({
                           <td>
                             <button
                               className="btn btn-ghost btn-sm"
-                              style={{ color: "var(--muted)", padding: "4px 8px" }}
+                              style={{
+                                color: "var(--muted)",
+                                padding: "4px 8px",
+                              }}
                               onClick={(e) => {
                                 e.stopPropagation();
                                 setEditingPeriod(pw.id);

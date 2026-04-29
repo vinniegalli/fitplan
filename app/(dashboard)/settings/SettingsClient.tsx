@@ -561,7 +561,10 @@ export default function SettingsClient({ trainer }: Props) {
         </div>
 
         {/* Zona de perigo */}
-        <div className="section-label" style={{ color: "#e8192c", marginTop: "32px" }}>
+        <div
+          className="section-label"
+          style={{ color: "#e8192c", marginTop: "32px" }}
+        >
           Zona de Perigo
         </div>
         <div
@@ -578,40 +581,72 @@ export default function SettingsClient({ trainer }: Props) {
             </div>
           )}
           {!deleteConfirm ? (
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "12px" }}>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                flexWrap: "wrap",
+                gap: "12px",
+              }}
+            >
               <div>
-                <div style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 700, fontSize: "1rem", color: "var(--text)" }}>
+                <div
+                  style={{
+                    fontFamily: "'Barlow Condensed', sans-serif",
+                    fontWeight: 700,
+                    fontSize: "1rem",
+                    color: "var(--text)",
+                  }}
+                >
                   Excluir minha conta
                 </div>
                 <p className="text-muted text-sm" style={{ marginTop: "4px" }}>
-                  Remove permanentemente sua conta, alunos e todos os dados. Ação irreversível.
+                  Remove permanentemente sua conta, alunos e todos os dados.
+                  Ação irreversível.
                 </p>
               </div>
               <button
                 className="btn btn-sm"
-                style={{ background: "rgba(232,25,44,0.12)", color: "#e8192c", border: "1px solid rgba(232,25,44,0.4)" }}
+                style={{
+                  background: "rgba(232,25,44,0.12)",
+                  color: "#e8192c",
+                  border: "1px solid rgba(232,25,44,0.4)",
+                }}
                 onClick={() => setDeleteConfirm(true)}
               >
                 Excluir conta
               </button>
             </div>
           ) : (
-            <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+            <div
+              style={{ display: "flex", flexDirection: "column", gap: "12px" }}
+            >
               <p style={{ color: "var(--text)", fontWeight: 600 }}>
-                Tem certeza? Esta ação é irreversível e todos os seus dados serão apagados.
+                Tem certeza? Esta ação é irreversível e todos os seus dados
+                serão apagados.
               </p>
               <div style={{ display: "flex", gap: "10px" }}>
                 <button
                   className="btn btn-sm"
-                  style={{ background: "#e8192c", color: "#fff", border: "none" }}
+                  style={{
+                    background: "#e8192c",
+                    color: "#fff",
+                    border: "none",
+                  }}
                   onClick={handleDeleteAccount}
                   disabled={deletingAccount}
                 >
-                  {deletingAccount ? "Excluindo..." : "Sim, excluir permanentemente"}
+                  {deletingAccount
+                    ? "Excluindo..."
+                    : "Sim, excluir permanentemente"}
                 </button>
                 <button
                   className="btn btn-ghost btn-sm"
-                  onClick={() => { setDeleteConfirm(false); setDeleteError(""); }}
+                  onClick={() => {
+                    setDeleteConfirm(false);
+                    setDeleteError("");
+                  }}
                   disabled={deletingAccount}
                 >
                   Cancelar

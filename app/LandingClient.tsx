@@ -122,7 +122,11 @@ export default function LandingClient() {
           }}
         >
           {FEATURES.map(({ Icon, title, desc }) => (
-            <div key={title} className="card card-red-left" style={{ padding: "20px" }}>
+            <div
+              key={title}
+              className="card card-red-left"
+              style={{ padding: "20px" }}
+            >
               <div style={{ marginBottom: "10px", color: "var(--primary)" }}>
                 <Icon sx={{ fontSize: 32 }} />
               </div>
@@ -145,8 +149,14 @@ export default function LandingClient() {
         </div>
 
         {/* Pricing */}
-        <div id="planos" style={{ scrollMarginTop: "80px", margin: "40px 0 60px" }}>
-          <div className="section-label" style={{ justifyContent: "center", marginBottom: "20px" }}>
+        <div
+          id="planos"
+          style={{ scrollMarginTop: "80px", margin: "40px 0 60px" }}
+        >
+          <div
+            className="section-label"
+            style={{ justifyContent: "center", marginBottom: "20px" }}
+          >
             Planos
           </div>
           <div
@@ -158,53 +168,174 @@ export default function LandingClient() {
           >
             {/* Free */}
             <div className="card card-red-top" style={{ padding: "24px" }}>
-              <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: "2rem", letterSpacing: "2px", color: "var(--text)", marginBottom: "4px" }}>
+              <div
+                style={{
+                  fontFamily: "'Bebas Neue', sans-serif",
+                  fontSize: "2rem",
+                  letterSpacing: "2px",
+                  color: "var(--text)",
+                  marginBottom: "4px",
+                }}
+              >
                 GRATUITO
               </div>
-              <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: "3rem", color: "var(--primary)", lineHeight: 1 }}>
+              <div
+                style={{
+                  fontFamily: "'Bebas Neue', sans-serif",
+                  fontSize: "3rem",
+                  color: "var(--primary)",
+                  lineHeight: 1,
+                }}
+              >
                 R$ 0
               </div>
-              <p className="text-muted text-sm" style={{ margin: "10px 0 20px" }}>Para começar</p>
-              <ul style={{ display: "flex", flexDirection: "column", gap: "8px", paddingLeft: "0", listStyle: "none", marginBottom: "24px" }}>
-                {["Até 3 alunos", "Todas as divisões de treino", "Periodização completa", "Links personalizados por aluno", "Tema padrão"].map((item) => (
-                  <li key={item} style={{ fontSize: "0.88rem", color: "var(--muted)", display: "flex", alignItems: "center", gap: "6px" }}>
-                    <CheckIcon sx={{ fontSize: 14, color: "var(--primary)" }} /> {item}
+              <p
+                className="text-muted text-sm"
+                style={{ margin: "10px 0 20px" }}
+              >
+                Para começar
+              </p>
+              <ul
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "8px",
+                  paddingLeft: "0",
+                  listStyle: "none",
+                  marginBottom: "24px",
+                }}
+              >
+                {[
+                  "Até 3 alunos",
+                  "Todas as divisões de treino",
+                  "Periodização completa",
+                  "Links personalizados por aluno",
+                  "Tema padrão",
+                ].map((item) => (
+                  <li
+                    key={item}
+                    style={{
+                      fontSize: "0.88rem",
+                      color: "var(--muted)",
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "6px",
+                    }}
+                  >
+                    <CheckIcon sx={{ fontSize: 14, color: "var(--primary)" }} />{" "}
+                    {item}
                   </li>
                 ))}
               </ul>
-              <Link href="/register" className="btn btn-outline" style={{ display: "block", textAlign: "center", width: "100%" }}>
+              <Link
+                href="/register"
+                className="btn btn-outline"
+                style={{ display: "block", textAlign: "center", width: "100%" }}
+              >
                 Criar conta grátis
               </Link>
             </div>
 
             {/* Pro */}
-            <div className="card" style={{ padding: "24px", border: "1px solid var(--primary)", position: "relative" }}>
+            <div
+              className="card"
+              style={{
+                padding: "24px",
+                border: "1px solid var(--primary)",
+                position: "relative",
+              }}
+            >
               <div style={{ position: "absolute", top: "-12px", left: "20px" }}>
                 <span className="badge badge-red">Recomendado</span>
               </div>
-              <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: "2rem", letterSpacing: "2px", color: "var(--text)", marginBottom: "4px" }}>
+              <div
+                style={{
+                  fontFamily: "'Bebas Neue', sans-serif",
+                  fontSize: "2rem",
+                  letterSpacing: "2px",
+                  color: "var(--text)",
+                  marginBottom: "4px",
+                }}
+              >
                 PRO
               </div>
-              <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: "3rem", color: "var(--primary)", lineHeight: 1 }}>
-                R$ 49<span style={{ fontSize: "1.2rem", color: "var(--muted)" }}>/mês</span>
+              <div
+                style={{
+                  fontFamily: "'Bebas Neue', sans-serif",
+                  fontSize: "3rem",
+                  color: "var(--primary)",
+                  lineHeight: 1,
+                }}
+              >
+                R$ 49
+                <span style={{ fontSize: "1.2rem", color: "var(--muted)" }}>
+                  /mês
+                </span>
               </div>
-              <p className="text-muted text-sm" style={{ margin: "10px 0 20px" }}>Para profissionais</p>
-              <ul style={{ display: "flex", flexDirection: "column", gap: "8px", paddingLeft: "0", listStyle: "none", marginBottom: "24px" }}>
-                {["Alunos ilimitados", "Tudo do plano gratuito", "Tema de cores personalizado", "Sua marca na view do aluno", "Suporte prioritário"].map((item) => (
-                  <li key={item} style={{ fontSize: "0.88rem", color: "var(--muted)", display: "flex", alignItems: "center", gap: "6px" }}>
-                    <CheckIcon sx={{ fontSize: 14, color: "var(--primary)" }} /> {item}
+              <p
+                className="text-muted text-sm"
+                style={{ margin: "10px 0 20px" }}
+              >
+                Para profissionais
+              </p>
+              <ul
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "8px",
+                  paddingLeft: "0",
+                  listStyle: "none",
+                  marginBottom: "24px",
+                }}
+              >
+                {[
+                  "Alunos ilimitados",
+                  "Tudo do plano gratuito",
+                  "Tema de cores personalizado",
+                  "Sua marca na view do aluno",
+                  "Suporte prioritário",
+                ].map((item) => (
+                  <li
+                    key={item}
+                    style={{
+                      fontSize: "0.88rem",
+                      color: "var(--muted)",
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "6px",
+                    }}
+                  >
+                    <CheckIcon sx={{ fontSize: 14, color: "var(--primary)" }} />{" "}
+                    {item}
                   </li>
                 ))}
               </ul>
-              <a href="mailto:contato@fitplan.app?subject=Quero o plano Pro" className="btn btn-primary" style={{ display: "block", textAlign: "center", width: "100%" }}>
+              <a
+                href="mailto:contato@fitplan.app?subject=Quero o plano Pro"
+                className="btn btn-primary"
+                style={{ display: "block", textAlign: "center", width: "100%" }}
+              >
                 Falar sobre o Pro
               </a>
             </div>
           </div>
         </div>
 
-        <footer style={{ borderTop: "1px solid var(--border)", padding: "24px 0", textAlign: "center" }}>
-          <p className="text-muted text-xs" style={{ letterSpacing: "1.5px", textTransform: "uppercase", fontFamily: "'Barlow Condensed', sans-serif" }}>
+        <footer
+          style={{
+            borderTop: "1px solid var(--border)",
+            padding: "24px 0",
+            textAlign: "center",
+          }}
+        >
+          <p
+            className="text-muted text-xs"
+            style={{
+              letterSpacing: "1.5px",
+              textTransform: "uppercase",
+              fontFamily: "'Barlow Condensed', sans-serif",
+            }}
+          >
             FitPlan · Feito para Personal Trainers
           </p>
         </footer>

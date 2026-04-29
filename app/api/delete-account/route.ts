@@ -19,13 +19,13 @@ export async function DELETE() {
   if (!serviceKey) {
     return NextResponse.json(
       { error: "Configuração ausente no servidor" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 
   const adminClient = createAdminClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    serviceKey
+    serviceKey,
   );
 
   const { error } = await adminClient.auth.admin.deleteUser(user.id);
