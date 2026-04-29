@@ -29,8 +29,8 @@ export async function middleware(request: NextRequest) {
 
   const { pathname } = request.nextUrl
 
-  // Protect /dashboard routes
-  if (pathname.startsWith('/dashboard') && !user) {
+  // Protect /dashboard routes and /settings
+  if ((pathname.startsWith('/dashboard') || pathname === '/settings') && !user) {
     const url = request.nextUrl.clone()
     url.pathname = '/login'
     return NextResponse.redirect(url)
@@ -47,5 +47,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/dashboard/:path*', '/login', '/register'],
+  matcher: ['/dashboard/:path*', '/settings', '/login', '/register'],
 }

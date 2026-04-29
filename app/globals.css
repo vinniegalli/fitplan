@@ -133,3 +133,31 @@ input::placeholder,textarea::placeholder{color:var(--muted);}
   .form-grid-2,.form-grid-3{grid-template-columns:1fr;}
   .modal{padding:20px;}
 }
+
+/* ── Responsive layout ─────────────────────────────────────── */
+.day-layout{display:grid;grid-template-columns:200px 1fr;gap:16px;}
+.mobile-day-select{display:none;}
+
+@media(max-width:768px){
+  .container-wide{padding:16px 12px;}
+  .day-layout{display:block;}
+  .day-layout .day-sidebar{display:none;}
+  .mobile-day-select{display:block!important;}
+  .site-header{padding:12px 16px;}
+  .logo{font-size:1.4rem;}
+
+  /* Exercise table: hide Notes column (shown inline under name) */
+  .exercise-table th:nth-child(5),
+  .exercise-table td:nth-child(5){display:none;}
+
+  /* Period table compact */
+  .period-table th:nth-child(6),
+  .period-table td:nth-child(6){display:none;}
+
+  /* Tabs */
+  .builder-tabs button{font-size:0.75rem;padding:8px 10px;}
+
+  /* Modals full width on small screens */
+  .modal{max-width:100%;margin:0;border-radius:0;max-height:100vh;}
+  .modal-backdrop{align-items:flex-end;padding:0;}
+}
