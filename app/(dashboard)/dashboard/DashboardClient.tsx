@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
+import DeleteIcon from "@mui/icons-material/Delete";
 import type { Trainer, Student } from "@/lib/types";
 
 interface StudentWithPlan extends Student {
@@ -246,8 +247,8 @@ export default function DashboardClient({ trainer, initialStudents }: Props) {
                       padding: "4px 6px",
                       lineHeight: 1,
                     }}
-                  >
-                    ✕
+                  >  
+                    <DeleteIcon sx={{ fontSize: 14 }} />
                   </button>
                   <Link
                     key={s.id}

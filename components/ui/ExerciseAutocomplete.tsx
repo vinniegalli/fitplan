@@ -116,7 +116,8 @@ export default function ExerciseAutocomplete({
           {value.trim().length > 0 &&
             !EXERCISE_LIST.some(
               (e) => e.toLowerCase() === value.toLowerCase(),
-            ) && (              <button
+            ) && (
+              <button
                 type="button"
                 onMouseDown={() => handleSelect(value.trim())}
                 style={{

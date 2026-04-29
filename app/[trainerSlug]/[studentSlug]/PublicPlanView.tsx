@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import BoltIcon from "@mui/icons-material/Bolt";
 import type {
   Student,
   TrainingPlan,
@@ -277,7 +278,7 @@ export default function PublicPlanView({
                     marginBottom: "4px",
                   }}
                 >
-                  ⚡ Aquecimento
+                  <BoltIcon sx={{ fontSize: 14, mr: 0.5, verticalAlign: 'middle' }} />Aquecimento
                 </strong>
                 {currentDay.warmup}
               </div>

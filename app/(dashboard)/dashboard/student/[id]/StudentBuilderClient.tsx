@@ -3,6 +3,15 @@
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
+import SettingsIcon from "@mui/icons-material/Settings";
+import ShareIcon from "@mui/icons-material/Share";
+import ContentCopyIcon from "@mui/icons-material/ContentCopy";
+import CheckIcon from "@mui/icons-material/Check";
+import WhatsAppIcon from "@mui/icons-material/WhatsApp";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import EditIcon from "@mui/icons-material/Edit";
+import CloseIcon from "@mui/icons-material/Close";
+import BoltIcon from "@mui/icons-material/Bolt";
 import type {
   Trainer,
   Student,
@@ -315,7 +324,14 @@ export default function StudentBuilderClient({
     <>
       <header className="site-header">
         <div className="site-header-inner">
-          <div style={{ display: "flex", alignItems: "center", gap: "12px", flexWrap: "wrap" }}>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "12px",
+              flexWrap: "wrap",
+            }}
+          >
             <Link href="/dashboard" className="btn btn-ghost btn-sm">
               ← Dashboard
             </Link>
@@ -323,7 +339,14 @@ export default function StudentBuilderClient({
               FIT<span>PLAN</span>
             </div>
           </div>
-          <div style={{ display: "flex", alignItems: "center", gap: "10px", flexWrap: "wrap" }}>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "10px",
+              flexWrap: "wrap",
+            }}
+          >
             <span className="badge">{student.name}</span>
             {plan && (
               <span className="badge badge-blue">
@@ -336,7 +359,7 @@ export default function StudentBuilderClient({
                 className="btn btn-outline btn-sm"
                 onClick={() => setShareOpen((p) => !p)}
               >
-                Compartilhar ↗
+                <ShareIcon sx={{ fontSize: 16, mr: 0.5 }} /> Compartilhar
               </button>
               {shareOpen && (
                 <div
@@ -355,7 +378,12 @@ export default function StudentBuilderClient({
                 >
                   <button
                     className="btn btn-ghost btn-sm"
-                    style={{ width: "100%", textAlign: "left", borderRadius: 0, padding: "10px 14px" }}
+                    style={{
+                      width: "100%",
+                      textAlign: "left",
+                      borderRadius: 0,
+                      padding: "10px 14px",
+                    }}
                     onClick={() => {
                       const url = `${window.location.origin}${publicUrl}`;
                       navigator.clipboard.writeText(url).then(() => {
@@ -365,34 +393,50 @@ export default function StudentBuilderClient({
                       setShareOpen(false);
                     }}
                   >
-                    {copied ? "✓ Copiado!" : "📋 Copiar link"}
+                    {copied ? <><CheckIcon sx={{ fontSize: 14, mr: 0.5 }} />Copiado!</> : <><ContentCopyIcon sx={{ fontSize: 14, mr: 0.5 }} />Copiar link</>}
                   </button>
                   <a
                     href={`https://wa.me/?text=${encodeURIComponent(`Seu plano de treino: ${typeof window !== "undefined" ? window.location.origin : ""}${publicUrl}`)}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="btn btn-ghost btn-sm"
-                    style={{ width: "100%", textAlign: "left", borderRadius: 0, padding: "10px 14px", display: "block" }}
+                    style={{
+                      width: "100%",
+                      textAlign: "left",
+                      borderRadius: 0,
+                      padding: "10px 14px",
+                      display: "block",
+                    }}
                     onClick={() => setShareOpen(false)}
                   >
-                    💬 WhatsApp
+                    <WhatsAppIcon sx={{ fontSize: 14, mr: 0.5 }} />WhatsApp
                   </a>
                   <a
                     href={publicUrl}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="btn btn-ghost btn-sm"
-                    style={{ width: "100%", textAlign: "left", borderRadius: 0, padding: "10px 14px", display: "block" }}
+                    style={{
+                      width: "100%",
+                      textAlign: "left",
+                      borderRadius: 0,
+                      padding: "10px 14px",
+                      display: "block",
+                    }}
                     onClick={() => setShareOpen(false)}
                   >
-                    👁️ Ver como aluno
+                    <VisibilityIcon sx={{ fontSize: 14, mr: 0.5 }} />Ver como aluno
                   </a>
                 </div>
               )}
             </div>
             {/* Settings button */}
-            <Link href="/settings" className="btn btn-ghost btn-sm" title="Configurações">
-              ⚙️
+            <Link
+              href="/settings"
+              className="btn btn-ghost btn-sm"
+              title="Configurações"
+            >
+              <SettingsIcon sx={{ fontSize: 20 }} />
             </Link>
           </div>
         </div>
@@ -486,7 +530,7 @@ export default function StudentBuilderClient({
                           className="btn btn-ghost btn-sm"
                           onClick={() => setEditingDayId(null)}
                         >
-                          ✕
+                          <CloseIcon sx={{ fontSize: 14 }} />
                         </button>
                       </div>
                     </div>
@@ -563,7 +607,7 @@ export default function StudentBuilderClient({
                           padding: "2px",
                         }}
                       >
-                        ✏️
+                        <EditIcon sx={{ fontSize: 13 }} />
                       </button>
                     </button>
                   )}
@@ -626,7 +670,7 @@ export default function StudentBuilderClient({
 
                   {/* Warmup */}
                   <div className="form-group" style={{ marginBottom: "16px" }}>
-                    <label className="form-label">⚡ Aquecimento</label>
+                    <label className="form-label" style={{ display: 'flex', alignItems: 'center', gap: '4px' }}><BoltIcon sx={{ fontSize: 15, color: 'var(--primary)' }} /> Aquecimento</label>
                     <textarea
                       rows={2}
                       defaultValue={currentDay.warmup ?? ""}
@@ -726,7 +770,7 @@ export default function StudentBuilderClient({
                                   }
                                   title="Remover"
                                 >
-                                  ✕
+                                  <CloseIcon sx={{ fontSize: 14 }} />
                                 </button>
                               </td>
                             </tr>
@@ -970,7 +1014,7 @@ export default function StudentBuilderClient({
                               className="btn btn-primary btn-sm"
                               onClick={() => savePeriodWeek(pw.id)}
                             >
-                              ✓
+                              <CheckIcon sx={{ fontSize: 14 }} />
                             </button>
                           </td>
                         </>
