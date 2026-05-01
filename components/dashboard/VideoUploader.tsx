@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef } from "react";
+import Link from "next/link";
 import type { VideoType } from "@/lib/types";
 
 interface Props {
@@ -97,7 +98,7 @@ export default function VideoUploader({
   if (!isPro) {
     return (
       <div style={{ fontSize: "0.75rem" }}>
-        <a
+        <Link
           href="/settings#upgrade"
           style={{
             display: "inline-flex",
@@ -117,7 +118,7 @@ export default function VideoUploader({
           title="Vídeos personalizados são exclusivos do plano Pro"
         >
           🔒 PRO
-        </a>
+        </Link>
       </div>
     );
   }
