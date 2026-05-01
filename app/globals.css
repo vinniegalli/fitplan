@@ -75,7 +75,7 @@ textarea::placeholder {
 }
 
 .site-header {
-  background: linear-gradient(135deg, #0a0a0a 0%, #1a0305 100%);
+  background: var(--surface);
   border-bottom: 2px solid var(--primary);
   padding: 16px 24px;
   position: sticky;

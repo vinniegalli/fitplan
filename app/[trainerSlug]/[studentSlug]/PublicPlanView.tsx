@@ -316,7 +316,7 @@ export default function PublicPlanView({
                 cursor: "pointer",
               }}
             >
-              📈 Progresso
+              Progresso
             </a>
           </div>
         </div>
