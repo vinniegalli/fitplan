@@ -225,7 +225,7 @@ export default function DashboardClient({ trainer, initialStudents }: Props) {
               placeholder="Buscar aluno..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              style={{ maxWidth: "320px", width: "100%" }}
+              style={{ width: "100%" }}
             />
           </div>
         )}
@@ -284,32 +284,36 @@ export default function DashboardClient({ trainer, initialStudents }: Props) {
                         style={{
                           display: "flex",
                           justifyContent: "space-between",
-                          alignItems: "flex-start",
+                          alignItems: "center",
                           marginBottom: "10px",
                         }}
                       >
-                        <span
-                          style={{
-                            fontFamily: "'Barlow Condensed', sans-serif",
-                            fontWeight: 700,
-                            fontSize: "1.05rem",
-                            color: "var(--text)",
-                            paddingRight: "24px",
-                          }}
-                        >
-                          {s.name}
-                        </span>
-                        <span
-                          className={`badge ${s.active ? "badge-green" : ""}`}
-                        >
-                          {s.active ? "Ativo" : "Inativo"}
-                        </span>
                         <div
                           style={{
-                            position: "absolute",
-                            top: "10px",
-                            right: "10px",
-                            zIndex: 1,
+                            display: "flex",
+                            justifyContent: "space-between",
+                            alignItems: "center",
+                          }}
+                        >
+                          <span
+                            style={{
+                              fontFamily: "'Barlow Condensed', sans-serif",
+                              fontWeight: 700,
+                              fontSize: "1.05rem",
+                              color: "var(--text)",
+                              paddingRight: "24px",
+                            }}
+                          >
+                            {s.name}
+                          </span>
+                          <span
+                            className={`badge ${s.active ? "badge-green" : ""}`}
+                          >
+                            {s.active ? "Ativo" : "Inativo"}
+                          </span>
+                        </div>
+                        <div
+                          style={{
                             display: "flex",
                             gap: "2px",
                           }}
@@ -329,7 +333,6 @@ export default function DashboardClient({ trainer, initialStudents }: Props) {
                               color: s.active
                                 ? "var(--muted)"
                                 : "var(--primary)",
-                              padding: "4px 6px",
                               lineHeight: 1,
                             }}
                           >
@@ -350,7 +353,6 @@ export default function DashboardClient({ trainer, initialStudents }: Props) {
                               border: "none",
                               cursor: "pointer",
                               color: "var(--muted)",
-                              padding: "4px 6px",
                               lineHeight: 1,
                             }}
                           >
