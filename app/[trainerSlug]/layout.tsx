@@ -2,28 +2,26 @@ import { createClient } from "@/lib/supabase/server";
 import { DEFAULT_THEME } from "@/lib/types";
 import type { TrainerTheme } from "@/lib/types";
 
-export default async function DashboardLayout({
+export default async function TrainerPublicLayout({
   children,
+  params,
 }: {
   children: React.ReactNode;
+  params: Promise<{ trainerSlug: string }>;
 }) {
+  const { trainerSlug } = await params;
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
 
   let theme: TrainerTheme = DEFAULT_THEME;
 
-  if (user) {
-    const { data: trainer } = await supabase
-      .from("trainers")
-      .select("theme")
-      .eq("user_id", user.id)
-      .single();
+  const { data: trainer } = await supabase
+    .from("trainers")
+    .select("theme")
+    .eq("slug", trainerSlug)
+    .single();
 
-    if (trainer?.theme) {
-      theme = { ...DEFAULT_THEME, ...trainer.theme };
-    }
+  if (trainer?.theme) {
+    theme = { ...DEFAULT_THEME, ...trainer.theme };
   }
 
   const css = `

@@ -51,22 +51,41 @@ function blend(hex1: string, hex2: string, t: number): string {
     a[2] + (b[2] - a[2]) * t,
   );
 }
-function deriveTheme(primary: string, bg: string, text: string): TrainerTheme {
+function getLuminance(hex: string): number {
+  const rgb = hexToRgb(hex);
+  if (!rgb) return 0;
+  const [r, g, b] = rgb.map((v) => {
+    const c = v / 255;
+    return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
+  });
+  return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+}
+function deriveTheme(
+  primary: string,
+  bg: string,
+  text: string,
+  surfaceOverride?: string,
+): TrainerTheme {
+  const isLight = getLuminance(bg) > 0.4;
+  const surface =
+    surfaceOverride ?? (isLight ? darken(bg, 0.06) : lighten(bg, 0.08));
+  const surface2 = isLight ? darken(surface, 0.08) : lighten(surface, 0.1);
+  const border = isLight ? darken(surface, 0.22) : lighten(surface, 0.22);
   return {
     primary,
     primaryDim: darken(primary, 0.35),
-    accent: lighten(primary, 0.15),
+    accent: isLight ? darken(primary, 0.1) : lighten(primary, 0.15),
     bg,
-    surface: lighten(bg, 0.08),
-    surface2: lighten(bg, 0.17),
-    border: lighten(bg, 0.28),
+    surface,
+    surface2,
+    border,
     text,
     muted: blend(text, bg, 0.48),
   };
 }
 
 const KEY_COLOR_FIELDS: {
-  key: "primary" | "bg" | "text";
+  key: "primary" | "bg" | "surface" | "text";
   label: string;
   hint: string;
 }[] = [
@@ -78,7 +97,12 @@ const KEY_COLOR_FIELDS: {
   {
     key: "bg",
     label: "Fundo da página",
-    hint: "Cor de fundo geral — superfícies são derivadas automaticamente",
+    hint: "Cor de fundo geral",
+  },
+  {
+    key: "surface",
+    label: "Fundo dos cards",
+    hint: "Cards, inputs e formulários — derivado do fundo ao resetar",
   },
   {
     key: "text",
@@ -127,12 +151,19 @@ export default function SettingsClient({ trainer }: Props) {
     router.refresh();
   }
 
-  function handleKeyColorChange(key: "primary" | "bg" | "text", value: string) {
+  function handleKeyColorChange(
+    key: "primary" | "bg" | "surface" | "text",
+    value: string,
+  ) {
     setTheme((prev) =>
       deriveTheme(
         key === "primary" ? value : prev.primary,
         key === "bg" ? value : prev.bg,
         key === "text" ? value : prev.text,
+        // When bg changes, re-derive surface automatically.
+        // When surface is explicitly changed, use that value.
+        // Otherwise keep the current surface.
+        key === "bg" ? undefined : key === "surface" ? value : prev.surface,
       ),
     );
   }
