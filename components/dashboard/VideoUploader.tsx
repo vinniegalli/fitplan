@@ -8,6 +8,7 @@ interface Props {
   currentUrl: string | null;
   currentType: VideoType | null;
   onSaved: (url: string | null, type: VideoType | null) => void;
+  isPro: boolean;
 }
 
 export default function VideoUploader({
@@ -15,6 +16,7 @@ export default function VideoUploader({
   currentUrl,
   currentType,
   onSaved,
+  isPro,
 }: Props) {
   const [mode, setMode] = useState<"idle" | "upload" | "url">("idle");
   const [urlInput, setUrlInput] = useState(currentUrl ?? "");
@@ -91,6 +93,34 @@ export default function VideoUploader({
   }
 
   const hasVideo = !!currentUrl;
+
+  if (!isPro) {
+    return (
+      <div style={{ fontSize: "0.75rem" }}>
+        <a
+          href="/settings#upgrade"
+          style={{
+            display: "inline-flex",
+            alignItems: "center",
+            gap: "5px",
+            fontFamily: "'Barlow Condensed', sans-serif",
+            fontWeight: 700,
+            letterSpacing: "1px",
+            textTransform: "uppercase",
+            fontSize: "0.7rem",
+            color: "var(--muted)",
+            border: "1px solid var(--border)",
+            borderRadius: "4px",
+            padding: "3px 8px",
+            textDecoration: "none",
+          }}
+          title="Vídeos personalizados são exclusivos do plano Pro"
+        >
+          🔒 PRO
+        </a>
+      </div>
+    );
+  }
 
   return (
     <div style={{ fontSize: "0.8rem" }}>

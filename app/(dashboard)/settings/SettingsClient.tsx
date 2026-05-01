@@ -7,30 +7,85 @@ import { createClient } from "@/lib/supabase/client";
 import type { Trainer, TrainerTheme } from "@/lib/types";
 import { DEFAULT_THEME } from "@/lib/types";
 
-const COLOR_FIELDS: { key: keyof TrainerTheme; label: string; hint: string }[] =
-  [
-    {
-      key: "primary",
-      label: "Cor primária",
-      hint: "Bordas, botões, destaques principais",
-    },
-    {
-      key: "primaryDim",
-      label: "Primária escura",
-      hint: "Versão escura da cor primária",
-    },
-    { key: "accent", label: "Destaque", hint: "Textos e badges de destaque" },
-    { key: "bg", label: "Fundo", hint: "Fundo geral da página" },
-    { key: "surface", label: "Superfície", hint: "Cards e containers" },
-    {
-      key: "surface2",
-      label: "Superfície 2",
-      hint: "Headers de tabela e elementos secundários",
-    },
-    { key: "border", label: "Borda", hint: "Bordas e divisores" },
-    { key: "text", label: "Texto", hint: "Texto principal" },
-    { key: "muted", label: "Texto muted", hint: "Labels e texto secundário" },
-  ];
+// ── Color derivation helpers ─────────────────────────────────
+function hexToRgb(hex: string): [number, number, number] | null {
+  const m = hex.match(/^#([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i);
+  if (!m) return null;
+  return [parseInt(m[1], 16), parseInt(m[2], 16), parseInt(m[3], 16)];
+}
+function rgbToHex(r: number, g: number, b: number): string {
+  return (
+    "#" +
+    [r, g, b]
+      .map((v) =>
+        Math.max(0, Math.min(255, Math.round(v)))
+          .toString(16)
+          .padStart(2, "0"),
+      )
+      .join("")
+  );
+}
+function lighten(hex: string, amount: number): string {
+  const rgb = hexToRgb(hex);
+  if (!rgb) return hex;
+  const [r, g, b] = rgb;
+  return rgbToHex(
+    r + (255 - r) * amount,
+    g + (255 - g) * amount,
+    b + (255 - b) * amount,
+  );
+}
+function darken(hex: string, amount: number): string {
+  const rgb = hexToRgb(hex);
+  if (!rgb) return hex;
+  const [r, g, b] = rgb;
+  return rgbToHex(r * (1 - amount), g * (1 - amount), b * (1 - amount));
+}
+function blend(hex1: string, hex2: string, t: number): string {
+  const a = hexToRgb(hex1);
+  const b = hexToRgb(hex2);
+  if (!a || !b) return hex1;
+  return rgbToHex(
+    a[0] + (b[0] - a[0]) * t,
+    a[1] + (b[1] - a[1]) * t,
+    a[2] + (b[2] - a[2]) * t,
+  );
+}
+function deriveTheme(primary: string, bg: string, text: string): TrainerTheme {
+  return {
+    primary,
+    primaryDim: darken(primary, 0.35),
+    accent: lighten(primary, 0.15),
+    bg,
+    surface: lighten(bg, 0.08),
+    surface2: lighten(bg, 0.17),
+    border: lighten(bg, 0.28),
+    text,
+    muted: blend(text, bg, 0.48),
+  };
+}
+
+const KEY_COLOR_FIELDS: {
+  key: "primary" | "bg" | "text";
+  label: string;
+  hint: string;
+}[] = [
+  {
+    key: "primary",
+    label: "Cor primária",
+    hint: "Destaques, botões e bordas principais",
+  },
+  {
+    key: "bg",
+    label: "Fundo da página",
+    hint: "Cor de fundo geral — superfícies são derivadas automaticamente",
+  },
+  {
+    key: "text",
+    label: "Texto principal",
+    hint: "Cor do texto — muted é derivado automaticamente",
+  },
+];
 
 interface Props {
   trainer: Trainer;
@@ -70,6 +125,16 @@ export default function SettingsClient({ trainer }: Props) {
     setMsg("Nome atualizado!");
     setSaving(false);
     router.refresh();
+  }
+
+  function handleKeyColorChange(key: "primary" | "bg" | "text", value: string) {
+    setTheme((prev) =>
+      deriveTheme(
+        key === "primary" ? value : prev.primary,
+        key === "bg" ? value : prev.bg,
+        key === "text" ? value : prev.text,
+      ),
+    );
   }
 
   async function handleSaveTheme() {
@@ -358,15 +423,9 @@ export default function SettingsClient({ trainer }: Props) {
           </div>
         )}
 
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: isPro ? "1fr 280px" : "1fr",
-            gap: "16px",
-          }}
-        >
+        <div className="theme-editor-grid">
           <div
-            className={`card card-red-top ${isPro ? "" : "opacity-disabled"}`}
+            className="card card-red-top"
             style={{
               padding: "20px",
               opacity: isPro ? 1 : 0.4,
@@ -374,9 +433,9 @@ export default function SettingsClient({ trainer }: Props) {
             }}
           >
             <div
-              style={{ display: "flex", flexDirection: "column", gap: "14px" }}
+              style={{ display: "flex", flexDirection: "column", gap: "16px" }}
             >
-              {COLOR_FIELDS.map((field) => (
+              {KEY_COLOR_FIELDS.map((field) => (
                 <div
                   key={field.key}
                   style={{ display: "flex", alignItems: "center", gap: "12px" }}
@@ -385,25 +444,25 @@ export default function SettingsClient({ trainer }: Props) {
                     type="color"
                     value={theme[field.key]}
                     onChange={(e) =>
-                      setTheme((prev) => ({
-                        ...prev,
-                        [field.key]: e.target.value,
-                      }))
+                      handleKeyColorChange(field.key, e.target.value)
                     }
                     style={{
                       width: "48px",
-                      height: "36px",
+                      height: "40px",
                       padding: "2px",
                       cursor: "pointer",
                       flex: "0 0 48px",
+                      border: "none",
+                      borderRadius: "4px",
+                      background: "transparent",
                     }}
                   />
-                  <div>
+                  <div style={{ flex: 1, minWidth: 0 }}>
                     <div
                       style={{
                         fontFamily: "'Barlow Condensed', sans-serif",
                         fontWeight: 700,
-                        fontSize: "0.8rem",
+                        fontSize: "0.85rem",
                         letterSpacing: "1px",
                         textTransform: "uppercase",
                         color: "var(--text)",
@@ -415,10 +474,10 @@ export default function SettingsClient({ trainer }: Props) {
                   </div>
                   <code
                     style={{
-                      marginLeft: "auto",
                       fontSize: "0.75rem",
                       color: "var(--muted)",
                       fontFamily: "monospace",
+                      flexShrink: 0,
                     }}
                   >
                     {theme[field.key]}
@@ -451,9 +510,19 @@ export default function SettingsClient({ trainer }: Props) {
 
           {/* Live preview */}
           {isPro && (
-            <div>
-              <div className="section-label" style={{ marginTop: 0 }}>
-                Visualização
+            <div className="card" style={{ padding: "16px" }}>
+              <div
+                style={{
+                  fontFamily: "'Barlow Condensed', sans-serif",
+                  fontWeight: 700,
+                  fontSize: "0.7rem",
+                  letterSpacing: "1.5px",
+                  textTransform: "uppercase",
+                  color: "var(--muted)",
+                  marginBottom: "12px",
+                }}
+              >
+                Pré-visualização
               </div>
               <div
                 style={{
@@ -465,85 +534,112 @@ export default function SettingsClient({ trainer }: Props) {
                   fontSize: "0.78rem",
                 }}
               >
+                {/* mini header */}
                 <div
                   style={{
-                    fontFamily: "'Bebas Neue', sans-serif",
-                    fontSize: "1.4rem",
-                    color: "var(--primary)",
-                    letterSpacing: "2px",
-                    marginBottom: "10px",
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    background: "var(--surface)",
+                    borderBottom: `2px solid var(--primary)`,
+                    padding: "8px 12px",
+                    marginBottom: "12px",
+                    borderRadius: "2px 2px 0 0",
                   }}
                 >
-                  PUSH A
+                  <span
+                    style={{
+                      fontFamily: "'Bebas Neue', sans-serif",
+                      fontSize: "1.1rem",
+                      color: "var(--primary)",
+                      letterSpacing: "2px",
+                    }}
+                  >
+                    FIT<span style={{ color: "var(--text)" }}>PLAN</span>
+                  </span>
+                  <span
+                    style={{
+                      fontSize: "0.65rem",
+                      color: "var(--muted)",
+                      fontFamily: "'Barlow Condensed', sans-serif",
+                      letterSpacing: "1px",
+                      textTransform: "uppercase",
+                    }}
+                  >
+                    PUSH A
+                  </span>
                 </div>
+                {/* exercise card */}
                 <div
                   style={{
                     background: "var(--surface)",
                     border: "1px solid var(--border)",
-                    borderTop: "2px solid var(--primary)",
-                    padding: "10px",
+                    borderLeft: "3px solid var(--primary)",
+                    padding: "10px 12px",
                     marginBottom: "8px",
+                    borderRadius: "2px",
                   }}
                 >
-                  <div style={{ fontWeight: 600, color: "var(--text)" }}>
+                  <div
+                    style={{
+                      fontWeight: 600,
+                      color: "var(--text)",
+                      marginBottom: "4px",
+                    }}
+                  >
                     Supino Inclinado
+                  </div>
+                  <div
+                    style={{ display: "flex", gap: "5px", flexWrap: "wrap" }}
+                  >
+                    <span
+                      style={{
+                        background: `${theme.primary}22`,
+                        border: `1px solid ${theme.primaryDim}`,
+                        color: theme.accent,
+                        padding: "2px 8px",
+                        borderRadius: "2px",
+                        fontSize: "0.65rem",
+                        fontFamily: "'Barlow Condensed', sans-serif",
+                        fontWeight: 700,
+                        textTransform: "uppercase",
+                        letterSpacing: "1px",
+                      }}
+                    >
+                      4 × 6–10
+                    </span>
+                    <span
+                      style={{
+                        background: "rgba(255,255,255,0.04)",
+                        border: "1px solid var(--border)",
+                        color: "var(--muted)",
+                        padding: "2px 8px",
+                        borderRadius: "2px",
+                        fontSize: "0.65rem",
+                        fontFamily: "'Barlow Condensed', sans-serif",
+                        fontWeight: 700,
+                        textTransform: "uppercase",
+                        letterSpacing: "1px",
+                      }}
+                    >
+                      composto
+                    </span>
                   </div>
                   <div
                     style={{
                       color: "var(--muted)",
-                      fontSize: "0.72rem",
-                      marginTop: "2px",
+                      fontSize: "0.7rem",
+                      marginTop: "4px",
                     }}
                   >
-                    Principal do treino. RIR 1–2.
+                    RIR 1–2
                   </div>
-                </div>
-                <div
-                  style={{
-                    display: "flex",
-                    gap: "6px",
-                    flexWrap: "wrap",
-                    marginBottom: "8px",
-                  }}
-                >
-                  <span
-                    style={{
-                      background: "rgba(255,255,255,0.05)",
-                      border: "1px solid var(--border)",
-                      color: "var(--muted)",
-                      padding: "2px 8px",
-                      borderRadius: "2px",
-                      fontSize: "0.68rem",
-                      fontFamily: "'Barlow Condensed', sans-serif",
-                      fontWeight: 700,
-                      textTransform: "uppercase",
-                      letterSpacing: "1px",
-                    }}
-                  >
-                    composto
-                  </span>
-                  <span
-                    style={{
-                      background: `${theme.primary}22`,
-                      border: `1px solid ${theme.primaryDim}`,
-                      color: theme.accent,
-                      padding: "2px 8px",
-                      borderRadius: "2px",
-                      fontSize: "0.68rem",
-                      fontFamily: "'Barlow Condensed', sans-serif",
-                      fontWeight: 700,
-                      textTransform: "uppercase",
-                      letterSpacing: "1px",
-                    }}
-                  >
-                    4 × 6–10
-                  </span>
                 </div>
                 <div
                   style={{
                     background: theme.primary,
                     color: "#fff",
-                    padding: "6px 12px",
+                    padding: "6px 14px",
                     borderRadius: "2px",
                     fontFamily: "'Barlow Condensed', sans-serif",
                     fontWeight: 700,
@@ -553,7 +649,7 @@ export default function SettingsClient({ trainer }: Props) {
                     display: "inline-block",
                   }}
                 >
-                  Botão primário
+                  Iniciar Treino
                 </div>
               </div>
             </div>

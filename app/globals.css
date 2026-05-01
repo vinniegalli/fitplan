@@ -569,6 +569,19 @@ textarea::placeholder {
   width: 100%;
 }
 
+/* Theme editor: 2 cols on desktop, stacked on mobile */
+.theme-editor-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+@media (max-width: 680px) {
+  .theme-editor-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 @media (max-width: 600px) {
   .form-grid-2,
   .form-grid-3 {

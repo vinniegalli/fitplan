@@ -804,6 +804,7 @@ export default function StudentBuilderClient({
                                     exerciseId={ex.id}
                                     currentUrl={ex.video_url ?? null}
                                     currentType={ex.video_type ?? null}
+                                    isPro={trainer.plan === "pro"}
                                     onSaved={(url, type) =>
                                       handleVideoSaved(
                                         currentDay.id,

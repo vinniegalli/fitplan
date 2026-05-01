@@ -5,6 +5,7 @@ import type { Exercise, ActiveExercise } from "@/lib/types";
 import SetInputRow from "./SetInputRow";
 import { useRestTimer } from "@/lib/hooks/useRestTimer";
 import VideoPlayer from "@/components/session/VideoPlayer";
+import { EXERCISE_DEFAULT_VIDEOS } from "@/lib/exercises";
 
 interface Props {
   exercise: Exercise;
@@ -34,6 +35,11 @@ export default function ExerciseSessionCard({
   periodVolume,
 }: Props) {
   const [showVideo, setShowVideo] = useState(false);
+  const effectiveVideoUrl =
+    exercise.video_url ?? EXERCISE_DEFAULT_VIDEOS[exercise.name];
+  const effectiveVideoType = exercise.video_url
+    ? exercise.video_type
+    : "external";
   const restSeconds = parseRestTime(exercise.rest_time);
   const {
     seconds,
@@ -133,7 +139,7 @@ export default function ExerciseSessionCard({
             {exercise.rest_time && (
               <span className="rest-chip">{exercise.rest_time}</span>
             )}
-            {exercise.video_url && (
+            {effectiveVideoUrl && (
               <button
                 onClick={(e) => {
                   e.stopPropagation();
@@ -165,9 +171,9 @@ export default function ExerciseSessionCard({
       </div>
 
       {/* Video player */}
-      {showVideo && exercise.video_url && (
+      {showVideo && effectiveVideoUrl && (
         <div style={{ marginBottom: "12px" }}>
-          <VideoPlayer url={exercise.video_url} type={exercise.video_type} />
+          <VideoPlayer url={effectiveVideoUrl} type={effectiveVideoType} />
         </div>
       )}
 

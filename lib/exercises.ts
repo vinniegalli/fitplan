@@ -1,3 +1,26 @@
+/**
+ * Vídeos padrão por exercício.
+ * Adicione aqui URLs do YouTube para qualquer exercício da lista.
+ * Eles aparecerão automaticamente para todos os alunos como fallback,
+ * podendo ser substituídos por um vídeo customizado no dashboard.
+ *
+ * Exemplo:
+ *   "Agachamento Livre": "https://www.youtube.com/watch?v=XXXXXXXXXXX",
+ */
+export const EXERCISE_DEFAULT_VIDEOS: Record<string, string> = {
+  // Peito
+  "Supino Reto com Barra": "https://youtu.be/72UUJVBuT7o?si=AkUfW-moSaVUq6dE",
+  "Supino Inclinado com Barra":
+    "https://youtu.be/XOGNcjXmafQ?si=60gLwm0Nmn1zsySj",
+  // Costas
+  // "Barra Fixa": "https://www.youtube.com/watch?v=...",
+  // Pernas
+  // "Agachamento Livre": "https://www.youtube.com/watch?v=...",
+  // "Leg Press 45°": "https://www.youtube.com/watch?v=...",
+  // "Hip Thrust": "https://www.youtube.com/watch?v=...",
+  // Adicione os demais conforme necessário
+};
+
 export const EXERCISE_LIST: string[] = [
   // Peito
   "Supino Reto com Barra",

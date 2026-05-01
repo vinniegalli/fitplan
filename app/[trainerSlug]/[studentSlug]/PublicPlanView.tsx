@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import BoltIcon from "@mui/icons-material/Bolt";
+import { EXERCISE_DEFAULT_VIDEOS } from "@/lib/exercises";
 import type {
   Student,
   TrainingPlan,
@@ -413,7 +414,12 @@ export default function PublicPlanView({
               {currentExercises.map((ex, i) => {
                 const clusterActive = isClusterActive(ex);
                 const isOpen = expandedExercise === ex.id;
-                const hasDetails = !!(ex.notes || ex.video_url);
+                const effectiveVideoUrl =
+                  ex.video_url ?? EXERCISE_DEFAULT_VIDEOS[ex.name];
+                const effectiveVideoType: VideoType = ex.video_url
+                  ? (ex.video_type ?? "external")
+                  : "external";
+                const hasDetails = !!(ex.notes || effectiveVideoUrl);
 
                 return (
                   <div
@@ -495,7 +501,7 @@ export default function PublicPlanView({
                       </div>
 
                       {/* Video indicator */}
-                      {ex.video_url && (
+                      {effectiveVideoUrl && (
                         <span
                           style={{
                             fontSize: "0.9rem",
@@ -537,10 +543,10 @@ export default function PublicPlanView({
                         }}
                       >
                         {/* Video */}
-                        {ex.video_url && (
+                        {effectiveVideoUrl && (
                           <ExerciseVideo
-                            url={ex.video_url}
-                            type={ex.video_type}
+                            url={effectiveVideoUrl}
+                            type={effectiveVideoType}
                           />
                         )}
 
