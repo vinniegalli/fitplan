@@ -91,6 +91,74 @@ CREATE INDEX IF NOT EXISTS idx_trainers_slug      ON public.trainers(slug);
 CREATE INDEX IF NOT EXISTS idx_students_slug      ON public.students(trainer_id, slug);
 
 -- ──────────────────────────────────────────────────────────────
+-- PHASE 2 — WORKOUT SESSIONS + SET RECORDS
+-- ──────────────────────────────────────────────────────────────
+
+-- Video support on exercises (ALTER if table already exists)
+ALTER TABLE public.exercises
+  ADD COLUMN IF NOT EXISTS video_url          text,
+  ADD COLUMN IF NOT EXISTS video_type         text CHECK (video_type IN ('system','custom','external')),
+  ADD COLUMN IF NOT EXISTS video_storage_path text;
+
+-- Each time a student starts a workout
+CREATE TABLE IF NOT EXISTS public.workout_sessions (
+  id              uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  student_id      uuid NOT NULL REFERENCES public.students(id) ON DELETE CASCADE,
+  workout_day_id  uuid NOT NULL REFERENCES public.workout_days(id) ON DELETE CASCADE,
+  week_number     int NOT NULL,
+  started_at      timestamptz NOT NULL DEFAULT now(),
+  completed_at    timestamptz,
+  notes           text
+);
+
+-- Each set performed during a session
+CREATE TABLE IF NOT EXISTS public.set_records (
+  id           uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  session_id   uuid NOT NULL REFERENCES public.workout_sessions(id) ON DELETE CASCADE,
+  exercise_id  uuid NOT NULL REFERENCES public.exercises(id) ON DELETE CASCADE,
+  set_number   int NOT NULL,
+  weight       numeric(6,2),
+  reps         int,
+  completed    boolean NOT NULL DEFAULT false,
+  recorded_at  timestamptz NOT NULL DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS idx_sessions_student   ON public.workout_sessions(student_id);
+CREATE INDEX IF NOT EXISTS idx_sessions_day       ON public.workout_sessions(workout_day_id);
+CREATE INDEX IF NOT EXISTS idx_sets_session       ON public.set_records(session_id);
+CREATE INDEX IF NOT EXISTS idx_sets_exercise      ON public.set_records(exercise_id);
+
+-- ── RLS on new tables ─────────────────────────────────────────
+
+ALTER TABLE public.workout_sessions ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.set_records      ENABLE ROW LEVEL SECURITY;
+
+-- Any public user can INSERT sessions (student uses public URL, no auth)
+CREATE POLICY "sessions: public insert" ON public.workout_sessions
+  FOR INSERT WITH CHECK (true);
+
+-- Public read (student can read own sessions, trainer via join)
+CREATE POLICY "sessions: public read" ON public.workout_sessions
+  FOR SELECT USING (true);
+
+-- Public update (student can complete their own session)
+CREATE POLICY "sessions: public update" ON public.workout_sessions
+  FOR UPDATE USING (true);
+
+-- Any public user can INSERT set records
+CREATE POLICY "sets: public insert" ON public.set_records
+  FOR INSERT WITH CHECK (true);
+
+CREATE POLICY "sets: public read" ON public.set_records
+  FOR SELECT USING (true);
+
+CREATE POLICY "sets: public update" ON public.set_records
+  FOR UPDATE USING (true);
+
+CREATE POLICY "sets: public delete" ON public.set_records
+  FOR DELETE USING (true);
+
+-- ──────────────────────────────────────────────────────────────
 -- RLS — Enable on all tables
 -- ──────────────────────────────────────────────────────────────
 

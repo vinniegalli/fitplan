@@ -22,6 +22,7 @@ import type {
 } from "@/lib/types";
 import { DIVISION_TEMPLATES, DEFAULT_PERIODIZATION } from "@/lib/types";
 import ExerciseAutocomplete from "@/components/ui/ExerciseAutocomplete";
+import VideoUploader from "@/components/dashboard/VideoUploader";
 
 interface Props {
   trainer: Trainer;
@@ -71,6 +72,7 @@ export default function StudentBuilderClient({
 
   const [editingPeriod, setEditingPeriod] = useState<string | null>(null);
   const [periodForm, setPeriodForm] = useState<Partial<PeriodizationWeek>>({});
+  const [videoExerciseId, setVideoExerciseId] = useState<string | null>(null);
 
   // Editing day label/focus
   const [editingDayId, setEditingDayId] = useState<string | null>(null);
@@ -207,6 +209,21 @@ export default function StudentBuilderClient({
       ...prev,
       [dayId]: prev[dayId].filter((ex) => ex.id !== exId),
     }));
+  }
+
+  function handleVideoSaved(
+    dayId: string,
+    exId: string,
+    url: string | null,
+    type: import("@/lib/types").VideoType | null,
+  ) {
+    setExercises((prev) => ({
+      ...prev,
+      [dayId]: prev[dayId].map((ex) =>
+        ex.id === exId ? { ...ex, video_url: url, video_type: type } : ex,
+      ),
+    }));
+    setVideoExerciseId(null);
   }
 
   // ── Edit Periodization week ───────────────────────────────────
@@ -714,6 +731,7 @@ export default function StudentBuilderClient({
                           <th>Tipo</th>
                           <th>Descanso</th>
                           <th>Notas</th>
+                          <th>Vídeo</th>
                           <th></th>
                         </tr>
                       </thead>
@@ -779,6 +797,38 @@ export default function StudentBuilderClient({
                                 <span className="ex-note">
                                   {ex.notes ?? ""}
                                 </span>
+                              </td>
+                              <td style={{ minWidth: "120px" }}>
+                                {videoExerciseId === ex.id ? (
+                                  <VideoUploader
+                                    exerciseId={ex.id}
+                                    currentUrl={ex.video_url ?? null}
+                                    currentType={ex.video_type ?? null}
+                                    onSaved={(url, type) =>
+                                      handleVideoSaved(
+                                        currentDay.id,
+                                        ex.id,
+                                        url,
+                                        type,
+                                      )
+                                    }
+                                  />
+                                ) : (
+                                  <button
+                                    className="btn btn-ghost btn-sm"
+                                    style={{
+                                      color: ex.video_url
+                                        ? "var(--primary)"
+                                        : "var(--muted)",
+                                      padding: "4px 8px",
+                                      fontSize: "0.7rem",
+                                    }}
+                                    onClick={() => setVideoExerciseId(ex.id)}
+                                    title="Gerenciar vídeo"
+                                  >
+                                    {ex.video_url ? "📹 Vídeo" : "+ Vídeo"}
+                                  </button>
+                                )}
                               </td>
                               <td>
                                 <button

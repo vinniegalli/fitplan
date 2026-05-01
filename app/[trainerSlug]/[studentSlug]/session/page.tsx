@@ -2,14 +2,22 @@ import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import type { TrainerTheme, Exercise } from "@/lib/types";
 import { DEFAULT_THEME } from "@/lib/types";
-import PublicPlanView from "./PublicPlanView";
+import WorkoutSessionClient from "./WorkoutSessionClient";
 
-export default async function StudentPublicPage({
+export default async function SessionPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ trainerSlug: string; studentSlug: string }>;
+  searchParams: Promise<{ day?: string; week?: string }>;
 }) {
   const { trainerSlug, studentSlug } = await params;
+  const { day: dayId, week: weekStr } = await searchParams;
+
+  if (!dayId || !weekStr) notFound();
+  const weekNumber = parseInt(weekStr, 10);
+  if (isNaN(weekNumber)) notFound();
+
   const supabase = await createClient();
 
   const { data: trainer } = await supabase
@@ -39,29 +47,27 @@ export default async function StudentPublicPage({
 
   if (!plan) notFound();
 
-  const { data: days } = await supabase
+  const { data: day } = await supabase
     .from("workout_days")
     .select("*")
+    .eq("id", dayId)
     .eq("plan_id", plan.id)
-    .order("day_order");
+    .single();
 
-  const workoutDays = days ?? [];
-  const exercisesByDay: Record<string, Exercise[]> = {};
+  if (!day) notFound();
 
-  for (const day of workoutDays) {
-    const { data: exs } = await supabase
-      .from("exercises")
-      .select("*")
-      .eq("workout_day_id", day.id)
-      .order("exercise_order");
-    exercisesByDay[day.id] = exs ?? [];
-  }
+  const { data: exercises } = await supabase
+    .from("exercises")
+    .select("*")
+    .eq("workout_day_id", day.id)
+    .order("exercise_order");
 
-  const { data: periodWeeks } = await supabase
+  const { data: periodWeek } = await supabase
     .from("periodization_weeks")
     .select("*")
     .eq("plan_id", plan.id)
-    .order("week_number");
+    .eq("week_number", weekNumber)
+    .single();
 
   const theme: TrainerTheme =
     trainer.plan === "pro"
@@ -69,15 +75,14 @@ export default async function StudentPublicPage({
       : DEFAULT_THEME;
 
   return (
-    <PublicPlanView
-      trainerName={trainer.name}
+    <WorkoutSessionClient
       trainerSlug={trainerSlug}
       studentSlug={studentSlug}
       student={student}
-      plan={plan}
-      days={workoutDays}
-      exercisesByDay={exercisesByDay}
-      periodWeeks={periodWeeks ?? []}
+      day={day}
+      exercises={(exercises ?? []) as Exercise[]}
+      periodWeek={periodWeek ?? null}
+      weekNumber={weekNumber}
       theme={theme}
     />
   );

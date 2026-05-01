@@ -9,10 +9,86 @@ import type {
   Exercise,
   PeriodizationWeek,
   TrainerTheme,
+  VideoType,
 } from "@/lib/types";
+
+function ExerciseVideo({ url, type }: { url: string; type: VideoType | null }) {
+  function getYouTubeEmbedUrl(u: string): string | null {
+    try {
+      const parsed = new URL(u);
+      if (
+        parsed.hostname.includes("youtube.com") ||
+        parsed.hostname.includes("youtu.be")
+      ) {
+        const id =
+          parsed.searchParams.get("v") ||
+          (parsed.hostname === "youtu.be" ? parsed.pathname.slice(1) : null) ||
+          (parsed.pathname.startsWith("/embed/")
+            ? parsed.pathname.split("/")[2]
+            : null);
+        if (id) return `https://www.youtube.com/embed/${id}`;
+      }
+    } catch {
+      // ignore
+    }
+    return null;
+  }
+
+  const embedUrl = type === "external" ? getYouTubeEmbedUrl(url) : null;
+
+  if (embedUrl) {
+    return (
+      <div
+        style={{
+          position: "relative",
+          paddingBottom: "56.25%",
+          height: 0,
+          borderRadius: "6px",
+          overflow: "hidden",
+          background: "#000",
+        }}
+      >
+        <iframe
+          src={embedUrl}
+          title="Demonstração"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowFullScreen
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100%",
+            border: "none",
+          }}
+        />
+      </div>
+    );
+  }
+
+  return (
+    <video
+      src={url}
+      controls
+      preload="metadata"
+      playsInline
+      style={{
+        width: "100%",
+        maxHeight: "260px",
+        borderRadius: "6px",
+        background: "#000",
+        display: "block",
+      }}
+    >
+      <track kind="captions" />
+    </video>
+  );
+}
 
 interface Props {
   trainerName: string;
+  trainerSlug: string;
+  studentSlug: string;
   student: Student;
   plan: TrainingPlan;
   days: WorkoutDay[];
@@ -39,6 +115,8 @@ function themeVars(t: TrainerTheme): React.CSSProperties {
 
 export default function PublicPlanView({
   trainerName,
+  trainerSlug,
+  studentSlug,
   student,
   plan,
   days,
@@ -49,6 +127,7 @@ export default function PublicPlanView({
   const [activeDay, setActiveDay] = useState<string>(days[0]?.id ?? "");
   const [activeWeek, setActiveWeek] = useState<number>(1);
   const [section, setSection] = useState<"workout" | "period">("workout");
+  const [expandedExercise, setExpandedExercise] = useState<string | null>(null);
 
   const currentDay = days.find((d) => d.id === activeDay);
   const currentExercises = exercisesByDay[activeDay] ?? [];
@@ -218,6 +297,26 @@ export default function PublicPlanView({
             >
               Periodização
             </button>
+            <a
+              href={`/${trainerSlug}/${studentSlug}/progress`}
+              style={{
+                fontFamily: "'Barlow Condensed', sans-serif",
+                fontSize: "0.8rem",
+                padding: "5px 12px",
+                letterSpacing: "1px",
+                textTransform: "uppercase",
+                color: "var(--muted)",
+                background: "transparent",
+                border: "1px solid var(--border)",
+                borderRadius: "4px",
+                textDecoration: "none",
+                display: "inline-flex",
+                alignItems: "center",
+                cursor: "pointer",
+              }}
+            >
+              📈 Progresso
+            </a>
           </div>
         </div>
       </header>
@@ -253,6 +352,27 @@ export default function PublicPlanView({
                   {currentDay.focus}
                 </p>
               )}
+              <a
+                href={`/${trainerSlug}/${studentSlug}/session?day=${currentDay.id}&week=${activeWeek}`}
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "6px",
+                  marginTop: "12px",
+                  fontFamily: "'Bebas Neue', sans-serif",
+                  fontSize: "1rem",
+                  letterSpacing: "2px",
+                  background: "var(--primary)",
+                  color: "#fff",
+                  border: "none",
+                  borderRadius: "6px",
+                  padding: "10px 22px",
+                  textDecoration: "none",
+                  cursor: "pointer",
+                }}
+              >
+                ▶ Iniciar Treino
+              </a>
             </div>
 
             {currentDay.warmup && (
@@ -287,34 +407,80 @@ export default function PublicPlanView({
               </div>
             )}
 
-            <div className="scrollable">
-              <table className="exercise-table">
-                <thead>
-                  <tr>
-                    <th>#</th>
-                    <th>Exercício</th>
-                    <th>Volume</th>
-                    <th>Descanso</th>
-                    <th>Notas</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {currentExercises.map((ex, i) => {
-                    const clusterActive = isClusterActive(ex);
-                    return (
-                      <tr
-                        key={ex.id}
-                        data-vol={
-                          ex.type === "cluster" || ex.type === "compound"
-                            ? ex.type
-                            : undefined
-                        }
+            <div
+              style={{ display: "flex", flexDirection: "column", gap: "6px" }}
+            >
+              {currentExercises.map((ex, i) => {
+                const clusterActive = isClusterActive(ex);
+                const isOpen = expandedExercise === ex.id;
+                const hasDetails = !!(ex.notes || ex.video_url);
+
+                return (
+                  <div
+                    key={ex.id}
+                    style={{
+                      background: "var(--surface)",
+                      border: `1px solid ${isOpen ? "var(--primary-dim)" : "var(--border)"}`,
+                      borderLeft: `3px solid ${isOpen ? "var(--primary)" : "transparent"}`,
+                      borderRadius: "4px",
+                      overflow: "hidden",
+                      transition: "border-color 0.15s",
+                    }}
+                  >
+                    {/* ── Collapsed row — always visible ── */}
+                    <button
+                      onClick={() => setExpandedExercise(isOpen ? null : ex.id)}
+                      style={{
+                        width: "100%",
+                        background: "transparent",
+                        border: "none",
+                        cursor: hasDetails ? "pointer" : "default",
+                        padding: "12px 14px",
+                        display: "grid",
+                        gridTemplateColumns: "28px 1fr auto auto",
+                        alignItems: "center",
+                        gap: "10px",
+                        textAlign: "left",
+                      }}
+                    >
+                      {/* Index */}
+                      <span
+                        style={{
+                          fontFamily: "'Barlow Condensed', sans-serif",
+                          fontSize: "0.75rem",
+                          fontWeight: 700,
+                          color: "var(--muted)",
+                        }}
                       >
-                        <td className="ex-num">
-                          {String(i + 1).padStart(2, "0")}
-                        </td>
-                        <td>
-                          <span className="ex-name">{ex.name}</span>
+                        {String(i + 1).padStart(2, "0")}
+                      </span>
+
+                      {/* Name + tags */}
+                      <div>
+                        <span
+                          style={{
+                            fontFamily: "'Barlow Condensed', sans-serif",
+                            fontSize: "1rem",
+                            fontWeight: 700,
+                            letterSpacing: "0.5px",
+                            color: "var(--text)",
+                          }}
+                        >
+                          {ex.name}
+                        </span>
+                        <div
+                          style={{
+                            display: "flex",
+                            gap: "5px",
+                            marginTop: "4px",
+                            flexWrap: "wrap",
+                            alignItems: "center",
+                          }}
+                        >
+                          <span className="vol-chip">{getVolume(ex)}</span>
+                          {ex.rest_time && (
+                            <span className="rest-chip">{ex.rest_time}</span>
+                          )}
                           {ex.type === "compound" && (
                             <span className="ex-tag">Composto</span>
                           )}
@@ -325,44 +491,74 @@ export default function PublicPlanView({
                               Cluster
                             </span>
                           )}
-                          {ex.notes && (
-                            <div className="ex-note">
-                              {ex.type === "cluster" && (
-                                <>
-                                  <span
-                                    style={{
-                                      display: clusterActive ? "" : "none",
-                                    }}
-                                  >
-                                    {ex.notes}
-                                  </span>
-                                  <span
-                                    style={{
-                                      display: clusterActive ? "none" : "",
-                                    }}
-                                  >
-                                    Séries convencionais. RIR 1–2.
-                                  </span>
-                                </>
-                              )}
-                              {ex.type !== "cluster" && ex.notes}
-                            </div>
-                          )}
-                        </td>
-                        <td>
-                          <span className="vol-chip">{getVolume(ex)}</span>
-                        </td>
-                        <td>
-                          <span className="rest-chip">
-                            {ex.rest_time ?? "—"}
-                          </span>
-                        </td>
-                        <td></td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
+                        </div>
+                      </div>
+
+                      {/* Video indicator */}
+                      {ex.video_url && (
+                        <span
+                          style={{
+                            fontSize: "0.9rem",
+                            opacity: 0.6,
+                          }}
+                        >
+                          ▶
+                        </span>
+                      )}
+
+                      {/* Chevron — only if there's content to expand */}
+                      {hasDetails && (
+                        <span
+                          style={{
+                            fontFamily: "'Barlow Condensed', sans-serif",
+                            fontSize: "0.75rem",
+                            color: "var(--muted)",
+                            transform: isOpen ? "rotate(180deg)" : "none",
+                            transition: "transform 0.2s",
+                            display: "inline-block",
+                            userSelect: "none",
+                          }}
+                        >
+                          ▾
+                        </span>
+                      )}
+                    </button>
+
+                    {/* ── Expanded details ── */}
+                    {isOpen && (
+                      <div
+                        style={{
+                          padding: "0 14px 14px",
+                          borderTop: "1px solid var(--border)",
+                          paddingTop: "12px",
+                          display: "flex",
+                          flexDirection: "column",
+                          gap: "12px",
+                        }}
+                      >
+                        {/* Video */}
+                        {ex.video_url && (
+                          <ExerciseVideo
+                            url={ex.video_url}
+                            type={ex.video_type}
+                          />
+                        )}
+
+                        {/* Notes */}
+                        {ex.notes && (
+                          <div className="ex-note">
+                            {ex.type === "cluster"
+                              ? clusterActive
+                                ? ex.notes
+                                : "Séries convencionais. RIR 1–2."
+                              : ex.notes}
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
             </div>
           </>
         )}
