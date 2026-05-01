@@ -161,8 +161,14 @@ export default function WorkoutSessionClient({
   const totalExercises = exercises.length;
   const allDone = completedCount === totalExercises && totalExercises > 0;
 
+  const [now, setNow] = useState(() => Date.now());
+  useEffect(() => {
+    const id = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(id);
+  }, []);
+
   const elapsed = Math.floor(
-    (Date.now() - new Date(state.started_at).getTime()) / 1000,
+    (now - new Date(state.started_at).getTime()) / 1000,
   );
   const elapsedMin = Math.floor(elapsed / 60);
   const elapsedSec = elapsed % 60;
