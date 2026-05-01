@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import type {
   Student,
@@ -64,13 +64,13 @@ export default function WorkoutSessionClient({
 
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
-  const [sessionInitializing, setSessionInitializing] = useState(false);
+  const sessionInitializing = useRef(false);
 
   // Create session on Supabase if we don't have one yet
   useEffect(() => {
-    if (state.session_id || sessionInitializing) return;
+    if (state.session_id || sessionInitializing.current) return;
 
-    setSessionInitializing(true);
+    sessionInitializing.current = true;
     fetch("/api/sessions", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -86,15 +86,14 @@ export default function WorkoutSessionClient({
       })
       .catch(() => {
         // Non-blocking — we still let the user work
-      })
-      .finally(() => setSessionInitializing(false));
+        sessionInitializing.current = false;
+      });
   }, [
     state.session_id,
     student.id,
     day.id,
     weekNumber,
     setSessionId,
-    sessionInitializing,
   ]);
 
   // Auto-save sets every time state changes (debounced)
