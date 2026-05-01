@@ -162,7 +162,7 @@ export default function LandingClient() {
           <div
             style={{
               display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+              gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
               gap: "16px",
             }}
           >
@@ -171,7 +171,7 @@ export default function LandingClient() {
               <div
                 style={{
                   fontFamily: "'Bebas Neue', sans-serif",
-                  fontSize: "2rem",
+                  fontSize: "1.6rem",
                   letterSpacing: "2px",
                   color: "var(--text)",
                   marginBottom: "4px",
@@ -182,12 +182,12 @@ export default function LandingClient() {
               <div
                 style={{
                   fontFamily: "'Bebas Neue', sans-serif",
-                  fontSize: "3rem",
+                  fontSize: "2.8rem",
                   color: "var(--primary)",
                   lineHeight: 1,
                 }}
               >
-                R$ 0
+                R$&nbsp;0
               </div>
               <p
                 className="text-muted text-sm"
@@ -209,7 +209,7 @@ export default function LandingClient() {
                   "Até 3 alunos",
                   "Todas as divisões de treino",
                   "Periodização completa",
-                  "Links personalizados por aluno",
+                  "Links personalizados",
                   "Tema padrão",
                 ].map((item) => (
                   <li
@@ -236,39 +236,29 @@ export default function LandingClient() {
               </Link>
             </div>
 
-            {/* Pro */}
-            <div
-              className="card"
-              style={{
-                padding: "24px",
-                border: "1px solid var(--primary)",
-                position: "relative",
-              }}
-            >
-              <div style={{ position: "absolute", top: "-12px", left: "20px" }}>
-                <span className="badge badge-red">Recomendado</span>
-              </div>
+            {/* Mensal */}
+            <div className="card" style={{ padding: "24px" }}>
               <div
                 style={{
                   fontFamily: "'Bebas Neue', sans-serif",
-                  fontSize: "2rem",
+                  fontSize: "1.6rem",
                   letterSpacing: "2px",
                   color: "var(--text)",
                   marginBottom: "4px",
                 }}
               >
-                PRO
+                MENSAL
               </div>
               <div
                 style={{
                   fontFamily: "'Bebas Neue', sans-serif",
-                  fontSize: "3rem",
+                  fontSize: "2.8rem",
                   color: "var(--primary)",
                   lineHeight: 1,
                 }}
               >
-                R$ 49
-                <span style={{ fontSize: "1.2rem", color: "var(--muted)" }}>
+                R$&nbsp;29,90
+                <span style={{ fontSize: "1rem", color: "var(--muted)" }}>
                   /mês
                 </span>
               </div>
@@ -276,7 +266,7 @@ export default function LandingClient() {
                 className="text-muted text-sm"
                 style={{ margin: "10px 0 20px" }}
               >
-                Para profissionais
+                Sem compromisso
               </p>
               <ul
                 style={{
@@ -290,9 +280,9 @@ export default function LandingClient() {
               >
                 {[
                   "Alunos ilimitados",
-                  "Tudo do plano gratuito",
-                  "Tema de cores personalizado",
-                  "Sua marca na view do aluno",
+                  "Tema personalizado",
+                  "Vídeos por exercício",
+                  "Bloqueio de acesso",
                   "Suporte prioritário",
                 ].map((item) => (
                   <li
@@ -310,13 +300,169 @@ export default function LandingClient() {
                   </li>
                 ))}
               </ul>
-              <a
-                href="mailto:contato@fitplan.app?subject=Quero o plano Pro"
+              <Link
+                href="/pricing"
+                className="btn btn-outline"
+                style={{ display: "block", textAlign: "center", width: "100%" }}
+              >
+                Assinar
+              </Link>
+            </div>
+
+            {/* Semestral — highlight */}
+            <div
+              className="card"
+              style={{
+                padding: "24px",
+                border: "1px solid var(--primary)",
+                position: "relative",
+              }}
+            >
+              <div style={{ position: "absolute", top: "-12px", left: "20px" }}>
+                <span className="badge badge-red">Popular</span>
+              </div>
+              <div
+                style={{
+                  fontFamily: "'Bebas Neue', sans-serif",
+                  fontSize: "1.6rem",
+                  letterSpacing: "2px",
+                  color: "var(--text)",
+                  marginBottom: "4px",
+                }}
+              >
+                SEMESTRAL
+              </div>
+              <div
+                style={{
+                  fontFamily: "'Bebas Neue', sans-serif",
+                  fontSize: "2.8rem",
+                  color: "var(--primary)",
+                  lineHeight: 1,
+                }}
+              >
+                R$&nbsp;159,90
+                <span style={{ fontSize: "1rem", color: "var(--muted)" }}>
+                  /6 meses
+                </span>
+              </div>
+              <p
+                className="text-muted text-sm"
+                style={{ margin: "10px 0 20px" }}
+              >
+                ≈ R$&nbsp;26,65/mês
+              </p>
+              <ul
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "8px",
+                  paddingLeft: "0",
+                  listStyle: "none",
+                  marginBottom: "24px",
+                }}
+              >
+                {[
+                  "Alunos ilimitados",
+                  "Tema personalizado",
+                  "Vídeos por exercício",
+                  "Bloqueio de acesso",
+                  "Suporte prioritário",
+                ].map((item) => (
+                  <li
+                    key={item}
+                    style={{
+                      fontSize: "0.88rem",
+                      color: "var(--muted)",
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "6px",
+                    }}
+                  >
+                    <CheckIcon sx={{ fontSize: 14, color: "var(--primary)" }} />{" "}
+                    {item}
+                  </li>
+                ))}
+              </ul>
+              <Link
+                href="/pricing"
                 className="btn btn-primary"
                 style={{ display: "block", textAlign: "center", width: "100%" }}
               >
-                Falar sobre o Pro
-              </a>
+                Assinar
+              </Link>
+            </div>
+
+            {/* Anual */}
+            <div className="card" style={{ padding: "24px" }}>
+              <div
+                style={{
+                  fontFamily: "'Bebas Neue', sans-serif",
+                  fontSize: "1.6rem",
+                  letterSpacing: "2px",
+                  color: "var(--text)",
+                  marginBottom: "4px",
+                }}
+              >
+                ANUAL
+              </div>
+              <div
+                style={{
+                  fontFamily: "'Bebas Neue', sans-serif",
+                  fontSize: "2.8rem",
+                  color: "var(--primary)",
+                  lineHeight: 1,
+                }}
+              >
+                R$&nbsp;329,90
+                <span style={{ fontSize: "1rem", color: "var(--muted)" }}>
+                  /ano
+                </span>
+              </div>
+              <p
+                className="text-muted text-sm"
+                style={{ margin: "10px 0 20px" }}
+              >
+                ≈ R$&nbsp;27,49/mês
+              </p>
+              <ul
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "8px",
+                  paddingLeft: "0",
+                  listStyle: "none",
+                  marginBottom: "24px",
+                }}
+              >
+                {[
+                  "Alunos ilimitados",
+                  "Tema personalizado",
+                  "Vídeos por exercício",
+                  "Bloqueio de acesso",
+                  "Suporte prioritário",
+                ].map((item) => (
+                  <li
+                    key={item}
+                    style={{
+                      fontSize: "0.88rem",
+                      color: "var(--muted)",
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "6px",
+                    }}
+                  >
+                    <CheckIcon sx={{ fontSize: 14, color: "var(--primary)" }} />{" "}
+                    {item}
+                  </li>
+                ))}
+              </ul>
+              <Link
+                href="/pricing"
+                className="btn btn-outline"
+                style={{ display: "block", textAlign: "center", width: "100%" }}
+              >
+                Assinar
+              </Link>
             </div>
           </div>
         </div>

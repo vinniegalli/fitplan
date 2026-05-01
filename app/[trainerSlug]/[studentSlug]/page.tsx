@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import type { TrainerTheme, Exercise } from "@/lib/types";
 import { DEFAULT_THEME } from "@/lib/types";
 import PublicPlanView from "./PublicPlanView";
+import AccessBlocked from "./AccessBlocked";
 
 export default async function StudentPublicPage({
   params,
@@ -25,10 +26,13 @@ export default async function StudentPublicPage({
     .select("*")
     .eq("trainer_id", trainer.id)
     .eq("slug", studentSlug)
-    .eq("active", true)
     .single();
 
   if (!student) notFound();
+
+  if (!student.active) {
+    return <AccessBlocked trainerName={trainer.name} />;
+  }
 
   const { data: plan } = await supabase
     .from("training_plans")

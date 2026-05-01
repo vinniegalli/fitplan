@@ -5,6 +5,9 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import DeleteIcon from "@mui/icons-material/Delete";
+import LockIcon from "@mui/icons-material/Lock";
+import LockOpenIcon from "@mui/icons-material/LockOpen";
+import BarChartIcon from "@mui/icons-material/BarChart";
 import type { Trainer, Student } from "@/lib/types";
 
 interface StudentWithPlan extends Student {
@@ -38,6 +41,7 @@ export default function DashboardClient({ trainer, initialStudents }: Props) {
   const [showModal, setShowModal] = useState(false);
   const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);
+  const [search, setSearch] = useState("");
 
   const [form, setForm] = useState({
     name: "",
@@ -112,6 +116,23 @@ export default function DashboardClient({ trainer, initialStudents }: Props) {
     const { error } = await supabase.from("students").delete().eq("id", id);
     if (!error) setStudents((prev) => prev.filter((s) => s.id !== id));
   }
+
+  async function handleToggleActive(id: string, current: boolean) {
+    const { error } = await supabase
+      .from("students")
+      .update({ active: !current })
+      .eq("id", id);
+    if (!error)
+      setStudents((prev) =>
+        prev.map((s) => (s.id === id ? { ...s, active: !current } : s)),
+      );
+  }
+
+  const filteredStudents = search.trim()
+    ? students.filter((s) =>
+        s.name.toLowerCase().includes(search.trim().toLowerCase()),
+      )
+    : students;
 
   return (
     <>
@@ -196,6 +217,19 @@ export default function DashboardClient({ trainer, initialStudents }: Props) {
           )}
         </div>
 
+        {/* Search */}
+        {students.length > 0 && (
+          <div style={{ marginBottom: "16px" }}>
+            <input
+              type="search"
+              placeholder="Buscar aluno..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              style={{ maxWidth: "320px", width: "100%" }}
+            />
+          </div>
+        )}
+
         {/* Student grid */}
         {students.length === 0 ? (
           <div
@@ -216,6 +250,10 @@ export default function DashboardClient({ trainer, initialStudents }: Props) {
               Clique em &ldquo;+ Novo Aluno&rdquo; para começar.
             </p>
           </div>
+        ) : filteredStudents.length === 0 ? (
+          <p className="text-muted text-sm">
+            Nenhum aluno encontrado para &ldquo;{search}&rdquo;.
+          </p>
         ) : (
           <div
             style={{
@@ -224,32 +262,60 @@ export default function DashboardClient({ trainer, initialStudents }: Props) {
               gap: "12px",
             }}
           >
-            {students.map((s) => {
+            {filteredStudents.map((s) => {
               const activePlan = s.training_plans?.find((p) => p.active);
               return (
                 <div key={s.id} style={{ position: "relative" }}>
-                  <button
-                    onClick={(e) => {
-                      e.preventDefault();
-                      handleDeleteStudent(s.id, s.name);
-                    }}
-                    title="Excluir aluno"
+                  {/* Action buttons */}
+                  <div
                     style={{
                       position: "absolute",
                       top: "10px",
                       right: "10px",
                       zIndex: 1,
-                      background: "transparent",
-                      border: "none",
-                      cursor: "pointer",
-                      color: "var(--muted)",
-                      fontSize: "0.85rem",
-                      padding: "4px 6px",
-                      lineHeight: 1,
+                      display: "flex",
+                      gap: "2px",
                     }}
                   >
-                    <DeleteIcon sx={{ fontSize: 14 }} />
-                  </button>
+                    <button
+                      onClick={(e) => {
+                        e.preventDefault();
+                        handleToggleActive(s.id, s.active);
+                      }}
+                      title={s.active ? "Bloquear acesso" : "Liberar acesso"}
+                      style={{
+                        background: "transparent",
+                        border: "none",
+                        cursor: "pointer",
+                        color: s.active ? "var(--muted)" : "var(--primary)",
+                        padding: "4px 6px",
+                        lineHeight: 1,
+                      }}
+                    >
+                      {s.active ? (
+                        <LockOpenIcon sx={{ fontSize: 14 }} />
+                      ) : (
+                        <LockIcon sx={{ fontSize: 14 }} />
+                      )}
+                    </button>
+                    <button
+                      onClick={(e) => {
+                        e.preventDefault();
+                        handleDeleteStudent(s.id, s.name);
+                      }}
+                      title="Excluir aluno"
+                      style={{
+                        background: "transparent",
+                        border: "none",
+                        cursor: "pointer",
+                        color: "var(--muted)",
+                        padding: "4px 6px",
+                        lineHeight: 1,
+                      }}
+                    >
+                      <DeleteIcon sx={{ fontSize: 14 }} />
+                    </button>
+                  </div>
                   <Link
                     key={s.id}
                     href={`/dashboard/student/${s.id}`}
@@ -338,9 +404,36 @@ export default function DashboardClient({ trainer, initialStudents }: Props) {
 
                       <p
                         className="text-xs"
-                        style={{ marginTop: "8px", color: "var(--primary)" }}
+                        style={{
+                          marginTop: "8px",
+                          display: "flex",
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                          gap: "8px",
+                        }}
                       >
-                        /{trainer.slug}/{s.slug}
+                        <span style={{ color: "var(--primary)" }}>
+                          /{trainer.slug}/{s.slug}
+                        </span>
+                        <Link
+                          href={`/${trainer.slug}/${s.slug}/progress`}
+                          onClick={(e) => e.stopPropagation()}
+                          title="Ver progresso do aluno"
+                          style={{
+                            color: "var(--muted)",
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "3px",
+                            fontSize: "0.7rem",
+                            fontFamily: "'Barlow Condensed', sans-serif",
+                            fontWeight: 700,
+                            letterSpacing: "0.5px",
+                            textTransform: "uppercase",
+                            textDecoration: "none",
+                          }}
+                        >
+                          <BarChartIcon sx={{ fontSize: 12 }} /> Progresso
+                        </Link>
                       </p>
                     </div>
                   </Link>
