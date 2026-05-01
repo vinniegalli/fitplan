@@ -267,55 +267,6 @@ export default function DashboardClient({ trainer, initialStudents }: Props) {
               return (
                 <div key={s.id} style={{ position: "relative" }}>
                   {/* Action buttons */}
-                  <div
-                    style={{
-                      position: "absolute",
-                      top: "10px",
-                      right: "10px",
-                      zIndex: 1,
-                      display: "flex",
-                      gap: "2px",
-                    }}
-                  >
-                    <button
-                      onClick={(e) => {
-                        e.preventDefault();
-                        handleToggleActive(s.id, s.active);
-                      }}
-                      title={s.active ? "Bloquear acesso" : "Liberar acesso"}
-                      style={{
-                        background: "transparent",
-                        border: "none",
-                        cursor: "pointer",
-                        color: s.active ? "var(--muted)" : "var(--primary)",
-                        padding: "4px 6px",
-                        lineHeight: 1,
-                      }}
-                    >
-                      {s.active ? (
-                        <LockOpenIcon sx={{ fontSize: 14 }} />
-                      ) : (
-                        <LockIcon sx={{ fontSize: 14 }} />
-                      )}
-                    </button>
-                    <button
-                      onClick={(e) => {
-                        e.preventDefault();
-                        handleDeleteStudent(s.id, s.name);
-                      }}
-                      title="Excluir aluno"
-                      style={{
-                        background: "transparent",
-                        border: "none",
-                        cursor: "pointer",
-                        color: "var(--muted)",
-                        padding: "4px 6px",
-                        lineHeight: 1,
-                      }}
-                    >
-                      <DeleteIcon sx={{ fontSize: 14 }} />
-                    </button>
-                  </div>
                   <Link
                     key={s.id}
                     href={`/dashboard/student/${s.id}`}
@@ -353,6 +304,59 @@ export default function DashboardClient({ trainer, initialStudents }: Props) {
                         >
                           {s.active ? "Ativo" : "Inativo"}
                         </span>
+                        <div
+                          style={{
+                            position: "absolute",
+                            top: "10px",
+                            right: "10px",
+                            zIndex: 1,
+                            display: "flex",
+                            gap: "2px",
+                          }}
+                        >
+                          <button
+                            onClick={(e) => {
+                              e.preventDefault();
+                              handleToggleActive(s.id, s.active);
+                            }}
+                            title={
+                              s.active ? "Bloquear acesso" : "Liberar acesso"
+                            }
+                            style={{
+                              background: "transparent",
+                              border: "none",
+                              cursor: "pointer",
+                              color: s.active
+                                ? "var(--muted)"
+                                : "var(--primary)",
+                              padding: "4px 6px",
+                              lineHeight: 1,
+                            }}
+                          >
+                            {s.active ? (
+                              <LockOpenIcon sx={{ fontSize: 14 }} />
+                            ) : (
+                              <LockIcon sx={{ fontSize: 14 }} />
+                            )}
+                          </button>
+                          <button
+                            onClick={(e) => {
+                              e.preventDefault();
+                              handleDeleteStudent(s.id, s.name);
+                            }}
+                            title="Excluir aluno"
+                            style={{
+                              background: "transparent",
+                              border: "none",
+                              cursor: "pointer",
+                              color: "var(--muted)",
+                              padding: "4px 6px",
+                              lineHeight: 1,
+                            }}
+                          >
+                            <DeleteIcon sx={{ fontSize: 14 }} />
+                          </button>
+                        </div>
                       </div>
 
                       {(s.age || s.weight || s.level) && (
