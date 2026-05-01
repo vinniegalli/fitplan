@@ -88,13 +88,7 @@ export default function WorkoutSessionClient({
         // Non-blocking — we still let the user work
         sessionInitializing.current = false;
       });
-  }, [
-    state.session_id,
-    student.id,
-    day.id,
-    weekNumber,
-    setSessionId,
-  ]);
+  }, [state.session_id, student.id, day.id, weekNumber, setSessionId]);
 
   // Auto-save sets every time state changes (debounced)
   const saveSets = useCallback(async () => {

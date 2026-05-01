@@ -71,19 +71,25 @@ export default function ProgressPageClient({
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    setLoading(true);
-    setError(null);
     const from = getFromDate(filter);
     const url = `/api/students/${student.id}/progress${from ? `?from=${from}` : ""}`;
 
-    fetch(url)
-      .then((r) => r.json())
-      .then((d) => {
+    async function load() {
+      setLoading(true);
+      setError(null);
+      try {
+        const r = await fetch(url);
+        const d = await r.json();
         if (!Array.isArray(d)) throw new Error(d.error ?? "Erro desconhecido");
         setData(d);
-      })
-      .catch((e) => setError(e.message))
-      .finally(() => setLoading(false));
+      } catch (e) {
+        setError((e as Error).message);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    load();
   }, [student.id, filter]);
 
   const chartTheme = {
